@@ -1,0 +1,6 @@
+# Code workspace files
+.vscode/
+*.code-workspace
+
+# Java/Maven build files
+target/
