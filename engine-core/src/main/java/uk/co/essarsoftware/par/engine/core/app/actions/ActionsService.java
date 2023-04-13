@@ -1,4 +1,4 @@
-package uk.co.essarsoftware.par.engine.core.app;
+package uk.co.essarsoftware.par.engine.core.app.actions;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -13,12 +13,12 @@ import org.springframework.stereotype.Service;
 import uk.co.essarsoftware.par.cards.Card;
 import uk.co.essarsoftware.par.cards.DiscardPile;
 import uk.co.essarsoftware.par.cards.DrawPile;
-import uk.co.essarsoftware.par.engine.core.app.ActionRequest.DiscardActionRequest;
-import uk.co.essarsoftware.par.engine.core.app.ActionRequest.PickupDiscardActionRequest;
-import uk.co.essarsoftware.par.engine.core.app.ActionRequest.PickupDrawActionRequest;
-import uk.co.essarsoftware.par.engine.core.app.ActionResponse.DiscardActionResponse;
-import uk.co.essarsoftware.par.engine.core.app.ActionResponse.PickupDiscardActionResponse;
-import uk.co.essarsoftware.par.engine.core.app.ActionResponse.PickupDrawActionResponse;
+import uk.co.essarsoftware.par.engine.core.app.CardEncoder;
+import uk.co.essarsoftware.par.engine.core.app.CardNotInHandException;
+import uk.co.essarsoftware.par.engine.core.app.PlayersService;
+import uk.co.essarsoftware.par.engine.core.app.actions.Action.DiscardAction;
+import uk.co.essarsoftware.par.engine.core.app.actions.Action.PickupDiscardAction;
+import uk.co.essarsoftware.par.engine.core.app.actions.Action.PickupDrawAction;
 import uk.co.essarsoftware.par.engine.core.events.EngineEventQueue;
 import uk.co.essarsoftware.par.engine.core.events.NextPlayerEvent;
 import uk.co.essarsoftware.par.engine.core.events.PlayerDiscardEvent;
@@ -35,20 +35,34 @@ public class ActionsService
 
     private static final Logger _LOG = LoggerFactory.getLogger(ActionsService.class);
 
-    @Autowired
-    private DiscardPile discardPile;
-
-    @Autowired
-    private DrawPile drawPile;
-
-    @Autowired
-    private EngineEventQueue eventQueue;
-
-    @Autowired
-    private PlayersService players;
+    private final DiscardPile discardPile;
+    private final DrawPile drawPile;
+    private final EngineEventQueue eventQueue;
+    private final PlayersService players;
 
     private int sequenceNo = 1;
 
+    @Autowired
+    public ActionsService(final EngineEventQueue eventQueue, final PlayersService players, final DrawPile drawPile, final DiscardPile discardPile) {
+
+        this.eventQueue = eventQueue;
+        this.players = players;
+        this.drawPile = drawPile;
+        this.discardPile = discardPile;
+
+    }
+
+
+    private static boolean validateAction(Action<?> action, String message) {
+
+        if (Objects.nonNull(action) && action.validateAction()) {
+
+            return true;
+
+        }
+        throw new InvalidActionRequestException(message);
+
+    }
 
     private static boolean validateNotNull(Object obj, String message) {
 
@@ -61,28 +75,34 @@ public class ActionsService
 
     }
 
-    static boolean validateRequest(ActionRequest request) {
+    static boolean validateRequest(ActionRequest<?> request) {
 
         return validateNotNull(request.getActionType(), "Missing action_type")
-            && validateNotNull(request.getActionSequence(), "Missing action_sequence");
+            && validateNotNull(request.getActionSequence(), "Missing action_sequence")
+            && validateAction(request.getAction(), "Missing action parameters");
 
     }
 
-    synchronized <E extends ActionRequest, F extends ActionResponse> ActionResponse runAction(Function<E, F> actionFunction, E request) {
 
-        System.out.println("running Action");
+    synchronized <A extends Action<E>, E> ActionResponse runAction(Function<A, E> actionFunction, ActionRequest<A> request) {
 
         _LOG.info("[\u001B[36m{}\u001B[0m] {}", request.getClass().getSimpleName(), request);
 
-        if (request.getActionSequence() != this.sequenceNo) {
+        if (request.getActionSequence() != sequenceNo) {
 
-            throw new ActionOutOfSequenceException(request.getActionSequence(), this.sequenceNo);
+            throw new ActionOutOfSequenceException(request.getActionSequence(), sequenceNo);
 
         }
-        F response = actionFunction.apply(request);
+        // Execute action function
+        A action = request.getAction();
+        E result = actionFunction.apply(action);
+        action.setResult(result);
+
+        // Create response
+        ActionResponse response = new ActionResponse(request, action);
 
         // Increment sequence if action is successful
-        this.sequenceNo ++;
+        sequenceNo ++;
 
         // Inject next sequence number into response
         response.setNextActionSequence(sequenceNo);
@@ -107,6 +127,7 @@ public class ActionsService
         eventQueue.registerProcessor(RoundStartedEvent.class, event -> { activate(event.getCurrentPlayer()); });
 
         // Player end turn processor
+        // TODO Move to PlayerService?
         eventQueue.registerProcessor(PlayerStateChangeEvent.class, event -> event.getNewState() == PlayerState.DISCARDED, event -> { endTurn(event.getPlayer()); });
         
     }
@@ -129,7 +150,7 @@ public class ActionsService
         // Check if the player has remaining cards
         if (player.getHandSize() == 0) {
 
-            // End the round
+            // TODO End the round
 
         }
 
@@ -145,18 +166,17 @@ public class ActionsService
     }
 
 
-
-    public DiscardActionResponse discard(final DiscardActionRequest request) {
+    public Card discard(final DiscardAction action) {
 
         // Check specified player is current player and in correct state
-        Player currentPlayer = players.validateIsCurrentPlayerAndInState(request.getPlayerID(), PlayerState.PLAYING);
+        Player currentPlayer = players.validateIsCurrentPlayerAndInState(action.getPlayerID(), PlayerState.PLAYING);
 
         // Resolve card from player hand
-        Card handCard = currentPlayer.getHand().findCard(request.getCard());
+        Card handCard = currentPlayer.getHand().findCard(action.getCard());
         if (handCard == null) {
 
             // Card hasn't been found in hand
-            throw new CardNotInHandException(String.format("Card %s not found in player hand", CardEncoder.asShortString(request.getCard())));
+            throw new CardNotInHandException(String.format("Card %s not found in player hand", CardEncoder.asShortString(action.getCard())));
 
         }
         currentPlayer.getHand().removeCard(handCard);
@@ -167,20 +187,16 @@ public class ActionsService
         // Change player state
         players.setPlayerState(currentPlayer, PlayerState.DISCARDED);
 
-        // Create response
-        DiscardActionResponse response = new DiscardActionResponse(request);
-        response.setCard(handCard);
-
         eventQueue.queueEvent(new PlayerDiscardEvent(currentPlayer, handCard));
 
-        return response;
+        return handCard;
 
     }
 
-    public PickupDiscardActionResponse pickupDiscard(final PickupDiscardActionRequest request) {
+    public Card pickupDiscard(final PickupDiscardAction action) {
 
         // Check specified player is current player and in correct state
-        Player currentPlayer = players.validateIsCurrentPlayerAndInState(request.getPlayerID(), PlayerState.PICKUP);
+        Player currentPlayer = players.validateIsCurrentPlayerAndInState(action.getPlayerID(), PlayerState.PICKUP);
 
         // Take card from discard pile
         Card card = discardPile.pickup();
@@ -191,20 +207,16 @@ public class ActionsService
         // Change player state
         players.setPlayerState(currentPlayer, currentPlayer.isDown() ? PlayerState.PEGGING : PlayerState.PLAYING);
 
-        // Create response
-        PickupDiscardActionResponse response = new PickupDiscardActionResponse(request);
-        response.setCard(card);
-
         eventQueue.queueEvent(new PlayerPickupDiscardEvent(currentPlayer, card));
 
-        return response;
+        return card;
 
     }
     
-    public PickupDrawActionResponse pickupDraw(final PickupDrawActionRequest request) {
+    public Card pickupDraw(final PickupDrawAction action) {
 
         // Check specified player is current player and in correct state
-        Player currentPlayer = players.validateIsCurrentPlayerAndInState(request.getPlayerID(), PlayerState.PICKUP);
+        Player currentPlayer = players.validateIsCurrentPlayerAndInState(action.getPlayerID(), PlayerState.PICKUP);
 
         // Take card from draw pile
         Card card = drawPile.pickup();
@@ -215,13 +227,9 @@ public class ActionsService
         // Change player state
         players.setPlayerState(currentPlayer, currentPlayer.isDown() ? PlayerState.PEGGING : PlayerState.PLAYING);
 
-        // Create response
-        PickupDrawActionResponse response = new PickupDrawActionResponse(request);
-        response.setCard(card);
-
         eventQueue.queueEvent(new PlayerPickupDrawEvent(currentPlayer));
 
-        return response;
+        return card;
 
     }
 }

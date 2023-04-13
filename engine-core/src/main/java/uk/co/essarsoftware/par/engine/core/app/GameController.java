@@ -18,9 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import uk.co.essarsoftware.par.cards.Card;
-import uk.co.essarsoftware.par.engine.core.app.ActionRequest.DiscardActionRequest;
-import uk.co.essarsoftware.par.engine.core.app.ActionRequest.PickupDiscardActionRequest;
-import uk.co.essarsoftware.par.engine.core.app.ActionRequest.PickupDrawActionRequest;
 import uk.co.essarsoftware.par.engine.core.events.EngineEvent;
 import uk.co.essarsoftware.par.engine.core.events.EngineEventQueue;
 import uk.co.essarsoftware.par.game.Player;
@@ -29,9 +26,6 @@ import uk.co.essarsoftware.par.game.Player;
 public class GameController
 {
     private static final Logger _LOG = LoggerFactory.getLogger(GameController.class);
-
-    @Autowired
-    private ActionsService actions;
 
     @Autowired
     private CardsService cards;
@@ -47,7 +41,7 @@ public class GameController
 
 
 
-    private static Mono<? extends ActionResponse> handleEngineException(Throwable e) {
+    private static Mono<?> handleEngineException(Throwable e) {
 
         _LOG.warn("[\u001B[31m{}\u001B[0m] {}", e.getClass().getSimpleName(), e.getMessage());
         return Mono.error(e);
@@ -145,40 +139,6 @@ public class GameController
 
     }
 
-    @PostMapping(path = "/actions/discard", consumes = "application/json", produces = "application/json")
-    public Mono<ActionResponse> discardJson(@RequestBody final DiscardActionRequest request) {
-
-        return Mono.just(request)
-            .filter(ActionsService::validateRequest)
-            .map(rq -> actions.runAction(actions::discard, rq))
-            .onErrorResume(GameController::handleEngineException);
-    }
-
-    @PostMapping(path = "/actions/pickupDiscard", consumes = "application/json", produces = "application/json")
-    public Mono<ActionResponse> pickupDiscardJson(@RequestBody final PickupDiscardActionRequest request) {
-
-        return Mono.just(request)
-            .filter(ActionsService::validateRequest)
-            .map(rq -> actions.runAction(actions::pickupDiscard, rq))
-            .onErrorResume(GameController::handleEngineException);
-
-    }
-
-    @PostMapping(path = "/actions/pickupDraw", consumes = "application/json", produces = "application/json")
-    public Mono<ActionResponse> pickupDrawJson(@RequestBody final PickupDrawActionRequest request) {
-
-        System.out.println("in pickupDrawJson");
-        Mono<ActionResponse> m = Mono.just(request)
-            .filter(ActionsService::validateRequest)
-            .map(rq -> actions.runAction(actions::pickupDraw, rq))
-            .onErrorResume(GameController::handleEngineException);
-
-        System.out.println("created Mono");
-
-        return m;
-
-    }
-
     @GetMapping(path = "/table/discard", produces = "application/json")
     public Mono<Map<String, Card>> getDiscardJson() {
 
@@ -194,5 +154,4 @@ public class GameController
         return Mono.just(card.toString());
 
     }
-    
 }
