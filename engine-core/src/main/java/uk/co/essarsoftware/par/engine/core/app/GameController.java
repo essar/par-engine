@@ -20,6 +20,7 @@ import reactor.core.publisher.Mono;
 import uk.co.essarsoftware.par.cards.Card;
 import uk.co.essarsoftware.par.engine.core.events.EngineEvent;
 import uk.co.essarsoftware.par.engine.core.events.EngineEventQueue;
+import uk.co.essarsoftware.par.game.Game;
 import uk.co.essarsoftware.par.game.Player;
 
 @RestController
@@ -33,18 +34,30 @@ public class GameController
     @Autowired
     private EngineEventQueue eventQueue;
 
-    @Autowired
-    private GameService game;
+    @Autowired Game game;
 
     @Autowired
-    private PlayersService players;
+    private GameService gameSvc;
+
+    @Autowired
+    private PlayersService playersSvc;
 
 
 
-    private static Mono<?> handleEngineException(Throwable e) {
+    private static Mono<? extends GameResponse> handleEngineException(Throwable e) {
 
         _LOG.warn("[\u001B[31m{}\u001B[0m] {}", e.getClass().getSimpleName(), e.getMessage());
         return Mono.error(e);
+
+    }
+
+    @GetMapping(path = "/game", produces = "application/json")
+    public Mono<GetGameResponse> getGame() {
+
+        return Mono.just(new GetGameResponse())
+            .map(r -> r.setGame(game))
+            .map(r -> r.setPlayers(players));
+            //.onErrorResume(GameController::handleEngineException)
 
     }
     
@@ -60,14 +73,14 @@ public class GameController
     @PostMapping(path = "/game/startRound", produces = "application/json")
     public Mono<StartRoundResponse> startRoundJson() {
 
-        return Mono.fromCallable(() -> game.startNextRound());
+        return Mono.fromCallable(() -> gameSvc.startNextRound());
 
     }
 
     @GetMapping(path = "/players", produces = "application/json")
     public Mono<GetPlayersResponse> getPlayersJson() {
 
-        return Mono.just(new GetPlayersResponse(players.getPlayersStream()));
+        return Mono.just(new GetPlayersResponse(playersSvc.getPlayersStream()));
 
     }
 
@@ -82,7 +95,7 @@ public class GameController
     @ResponseStatus(code = HttpStatus.CREATED)
     public Mono<CreatePlayerResponse> createPlayerJson(@RequestBody CreatePlayerRequest request) {
 
-        CreatePlayerResponse response = new CreatePlayerResponse(players.createPlayer(request.getPlayerName()));
+        CreatePlayerResponse response = new CreatePlayerResponse(playersSvc.createPlayer(request.getPlayerName()));
         return Mono.just(response);
 
     }
@@ -91,7 +104,7 @@ public class GameController
     @ResponseStatus(code = HttpStatus.CREATED)
     public Mono<String> createPlayerText(@RequestParam(name = "player_name", required = true) final String playerName) {
 
-        CreatePlayerResponse response = new CreatePlayerResponse(players.createPlayer(playerName));
+        CreatePlayerResponse response = new CreatePlayerResponse(playersSvc.createPlayer(playerName));
         return Mono.just(response.toString());
 
     }
@@ -99,7 +112,7 @@ public class GameController
     @GetMapping(path = "/players/{player_id}", produces = "application/json")
     public Mono<GetPlayerResponse> getPlayerJson(@PathVariable(name = "player_id") final String playerID) {
 
-        GetPlayerResponse response = new GetPlayerResponse(players.getPlayer(playerID));
+        GetPlayerResponse response = new GetPlayerResponse(playersSvc.getPlayer(playerID));
         return Mono.just(response);
 
     }
@@ -107,7 +120,7 @@ public class GameController
     @GetMapping(path = "/players/{player_id}", produces = "text/plain")
     public Mono<String> getPlayerText(@PathVariable(name = "player_id") final String playerID) {
 
-        GetPlayerResponse response = new GetPlayerResponse(players.getPlayer(playerID));
+        GetPlayerResponse response = new GetPlayerResponse(playersSvc.getPlayer(playerID));
         return Mono.just(response.toString());
 
     }
@@ -116,7 +129,7 @@ public class GameController
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public Mono<?> deletePlayerJson(@PathVariable(name = "player_id") final String playerID) {
 
-        players.removePlayer(players.getPlayer(playerID));
+        playersSvc.removePlayer(playersSvc.getPlayer(playerID));
         return Mono.empty();
 
     }
@@ -124,7 +137,7 @@ public class GameController
     @GetMapping(path = "/players/{player_id}/hand", produces = "application/json")
     public Mono<GetPlayerHandResponse> getPlayerHandJson(@PathVariable(name = "player_id") final String playerID) {
 
-        Player player = players.getPlayer(playerID);
+        Player player = playersSvc.getPlayer(playerID);
         GetPlayerHandResponse response = new GetPlayerHandResponse(player);
         return Mono.just(response);
 
@@ -133,7 +146,7 @@ public class GameController
     @GetMapping(path = "/players/{player_id}/hand", produces = "text/plain")
     public Mono<String> getPlayerHandText(@PathVariable(name = "player_id") final String playerID) {
 
-        Player player = players.getPlayer(playerID);
+        Player player = playersSvc.getPlayer(playerID);
         GetPlayerHandResponse response = new GetPlayerHandResponse(player);
         return Mono.just(response.toString());
 

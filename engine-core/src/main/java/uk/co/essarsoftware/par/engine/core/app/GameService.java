@@ -45,6 +45,12 @@ public class GameService
         }
     }
 
+    public Game getGame() {
+
+        return game;
+
+    }
+
     public synchronized StartRoundResponse startNextRound() {
 
         if (game.getCurrentRound() == Round.END) {
