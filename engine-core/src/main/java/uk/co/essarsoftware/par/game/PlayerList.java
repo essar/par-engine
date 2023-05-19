@@ -21,20 +21,20 @@ public class PlayerList extends LinkedList<Player>
     public Player getCurrentPlayer() {
 
         // Current player is referenced by the current index pointer
-        return get(playerPointer.currentIndex());
+        return  isEmpty() ? null : get(playerPointer.currentIndex());
 
     }
 
     public Player getDealer() {
 
         // The dealer is always at the back of the list
-        return getLast();
+        return isEmpty() ? null : getLast();
 
     }
 
     public Player getNextPlayer() {
 
-        return get(playerPointer.nextIndex());
+        return isEmpty() ? null : get(playerPointer.nextIndex());
 
     }
 

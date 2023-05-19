@@ -1,73 +1,68 @@
 package uk.co.essarsoftware.par.engine.core.app;
 
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonGetter;
 
 import uk.co.essarsoftware.par.game.Game;
 import uk.co.essarsoftware.par.game.Player;
-import uk.co.essarsoftware.par.game.PlayerList;
 import uk.co.essarsoftware.par.game.Round;
 
 public class GetGameResponse
 {
 
-    private Game game;
-    private PlayerList players;
+    private final Game game;
 
-    GetGameResponse setGame(Game game) {
+    public GetGameResponse(Game game) {
 
         this.game = game;
-        return this;
-
-    }
-
-    GetGameResponse setPlayers(PlayerList players) {
-
-        this.players = players;
-        return this;
 
     }
 
     @JsonGetter("current_player")
-    public Player getCurrentPlayer() {
+    public Map<String, Object> getCurrentPlayer() {
 
-        return players == null ? null : players.getCurrentPlayer();
+        Player currentPlayer = game.getCurrentPlayer();
+        return currentPlayer == null ? null : Map.of(
+            "player_id", currentPlayer.getPlayerID(),
+            "player_name", currentPlayer.getPlayerName(),
+            "player_state", currentPlayer.getPlayerState()
+        );
 
     }
 
-    @JsonGetter("dealer")
-    public Player getDealer() {
+    @JsonGetter("dealer_id")
+    public String getDealer() {
 
-        return players == null ? null : players.getDealer();
+        return game.getDealer() == null ? null : game.getDealer().getPlayerID();
         
     }
 
     @JsonGetter("current_round")
     public Round getCurrentRound() {
 
-        return game == null ? null : game.getCurrentRound();
+        return game.getCurrentRound();
 
     }
 
     @JsonGetter("game_id")
     public String getGameID() {
 
-        return game == null ? null : game.getGameID();
+        return game.getGameID();
 
     }
 
     @JsonGetter("player_count")
     public Integer getPlayerCount() {
 
-        return players == null ? null : players.size();
+        return game.getPlayerCount();
         
     }
-
-    
 
     @JsonGetter("turn_count")
     public Integer getTurnCount() {
 
-        return game == null ? null : game.getTurnCount();
+        return game.getTurnCount();
 
     }
 
