@@ -1,9 +1,8 @@
 package uk.co.essarsoftware.par.engine.core.app;
 
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonGetter;
 
+import uk.co.essarsoftware.par.engine.core.app.players.PlayerStubResponse;
 import uk.co.essarsoftware.par.game.Game;
 import uk.co.essarsoftware.par.game.Player;
 import uk.co.essarsoftware.par.game.Round;
@@ -20,14 +19,10 @@ public class GetGameResponse
     }
 
     @JsonGetter("current_player")
-    public Map<String, Object> getCurrentPlayer() {
+    public PlayerStubResponse getCurrentPlayer() {
 
         Player currentPlayer = game.getCurrentPlayer();
-        return currentPlayer == null ? null : Map.of(
-            "player_id", currentPlayer.getPlayerID(),
-            "player_name", currentPlayer.getPlayerName(),
-            "player_state", currentPlayer.getPlayerState()
-        );
+        return new PlayerStubResponse(currentPlayer);
 
     }
 
