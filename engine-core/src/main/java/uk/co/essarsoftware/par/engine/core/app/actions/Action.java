@@ -1,10 +1,13 @@
 package uk.co.essarsoftware.par.engine.core.app.actions;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import uk.co.essarsoftware.par.cards.Card;
+import uk.co.essarsoftware.par.cards.Play;
 import uk.co.essarsoftware.par.engine.core.app.CardEncoder;
 
 abstract class Action<R>
@@ -34,9 +37,21 @@ abstract class Action<R>
 
     abstract void setResult(R card);
 
-    void addActionParameter(String key, Object value) {
+    protected void addActionParameter(String key, Object value) {
 
         if (value == null) {
+
+            throw new InvalidActionRequestException(String.format("Missing parameter: %s", key));
+
+        }
+        params.put(key, value);
+
+    }
+
+    protected <E> void copyActionParameter(ActionRequest request, String key, Class<E> clz, boolean required) {
+
+        E value = request.getRequestParameter(key, clz);
+        if (required && value == null) {
 
             throw new InvalidActionRequestException(String.format("Missing parameter: %s", key));
 
@@ -76,7 +91,7 @@ abstract class Action<R>
         public DiscardAction(ActionRequest request) {
 
             super(request);
-            addActionParameter("card", CardEncoder.asCard(request.getActionParameter("card", String.class)));
+            addActionParameter("card", CardEncoder.asCard(request.getRequestParameter("card", String.class)));
 
         }
 
