@@ -6,12 +6,12 @@ import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import uk.co.essarsoftware.par.cards.Card;
 import uk.co.essarsoftware.par.cards.DiscardPile;
 import uk.co.essarsoftware.par.cards.DrawPile;
+import uk.co.essarsoftware.par.cards.Hand;
 import uk.co.essarsoftware.par.cards.Play;
 import uk.co.essarsoftware.par.engine.core.app.CardEncoder;
 import uk.co.essarsoftware.par.engine.core.app.CardNotInHandException;
@@ -46,7 +46,6 @@ public class ActionsService
 
     private int sequenceNo = 1;
 
-    @Autowired
     public ActionsService(final EngineEventQueue eventQueue, final PlayersService players, final PlaysService playsSvc, final DrawPile drawPile, final DiscardPile discardPile) {
 
         this.eventQueue = eventQueue;
@@ -57,21 +56,7 @@ public class ActionsService
 
     }
 
-    private Card resolveCardInPlayerHand(Player player, Card card) {
-
-        // Resolve card from player hand
-        Card handCard = player.getHand().findCard(card);
-        if (handCard == null) {
-
-            // Card hasn't been found in hand
-            throw new CardNotInHandException(String.format("Card %s not found in player hand", CardEncoder.asShortString(card)));
-
-        }
-        return handCard;
-        
-    }
-
-    private boolean validateSequence(Action action) {
+    private boolean validateSequence(Action<?> action) {
 
         _LOG.debug("Validating sequence number");
         if (action.getActionSequence() == sequenceNo) {
@@ -83,6 +68,43 @@ public class ActionsService
     
     }
 
+    Card resolveCard(Card card) {
+
+        Card[] cards = resolveCards(card);
+        if (cards.length > 0) {
+
+            return cards[0];
+
+        }
+        return null;
+
+    }
+
+    Card[] resolveCards(Card... cards) {
+
+        // Create temporary hand and add all cards from the player's hand
+        Hand tempHand = new Hand();
+        players.getCurrentPlayer().getHand().getCardsStream().forEach(tempHand::addCard);
+
+        // Resolve cards from player hand
+        Card[] resolvedCards = Arrays.stream(cards)
+            .map(c -> {
+                Card handCard = tempHand.findCard(c);
+                if (handCard == null) {
+
+                    // Card hasn't been found in hand
+                    throw new CardNotInHandException(String.format("Card %s not found in player hand", CardEncoder.asShortString(c)));
+
+                }
+                // Remove from the temporary hand to prevent duplicate selection
+                tempHand.removeCard(handCard);
+                return handCard;
+            })
+            .toArray(Card[]::new);
+
+        return resolvedCards;
+        
+    }
 
     synchronized <A extends Action<E>, E> ActionResponse runAction(Function<A, E> actionFunction, A action) {
 
@@ -169,7 +191,7 @@ public class ActionsService
         Player currentPlayer = players.validateIsCurrentPlayerAndInState(action.getPlayerID(), PlayerState.PLAYING);
 
         // Resolve card from player hand
-        Card card = resolveCardInPlayerHand(currentPlayer, action.getCard());
+        Card card = resolveCard(action.getCard());
         currentPlayer.getHand().removeCard(card);
 
         // Add card to discard pile
@@ -231,10 +253,8 @@ public class ActionsService
 
         // Get cards and resolve any jokers
         // TODO Resolve jokers
-        Card[] cards = Arrays.stream(action.getCards())
-            .map(c -> resolveCardInPlayerHand(currentPlayer, c))
-            .toArray(Card[]::new);
-
+        Card[] cards = resolveCards(action.getCards());
+        
         // Try and find an available play
         Play play = plays.buildPlayForPlayer(currentPlayer, cards);
 
