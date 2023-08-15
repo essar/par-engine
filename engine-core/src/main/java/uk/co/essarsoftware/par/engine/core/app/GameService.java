@@ -9,6 +9,7 @@ import uk.co.essarsoftware.par.engine.core.app.players.PlayersService;
 import uk.co.essarsoftware.par.engine.core.events.EngineEventQueue;
 import uk.co.essarsoftware.par.engine.core.events.RoundStartedEvent;
 import uk.co.essarsoftware.par.game.Game;
+import uk.co.essarsoftware.par.game.PlaySet;
 import uk.co.essarsoftware.par.game.PlayerState;
 import uk.co.essarsoftware.par.game.Round;
 
@@ -18,17 +19,22 @@ public class GameService
 
     private static final Logger _LOG = LoggerFactory.getLogger(GameService.class);
 
-    @Autowired
-    private CardsService cards;
+    private final CardsService cards;
+    private final EngineEventQueue eventQueue;
+    private final Game game;
+    private final PlaySet plays;
+    private final PlayersService players;
 
     @Autowired
-    private EngineEventQueue eventQueue;
+    public GameService(Game game, EngineEventQueue eventQueue, PlayersService players, PlaySet plays, CardsService cards) {
 
-    @Autowired
-    private Game game;
+        this.game = game;
+        this.eventQueue = eventQueue;
+        this.players = players;
+        this.plays = plays;
+        this.cards = cards;
 
-    @Autowired
-    private PlayersService players;
+    }
 
     private static Round getNextRound(Round currentRound) {
 
@@ -76,6 +82,9 @@ public class GameService
 
         // Reinitialize card piles
         cards.initPiles();
+
+        // Initialize plays
+        plays.initRound(game.getCurrentRound());
 
         // Deal player hands
         cards.dealHands();

@@ -10,6 +10,7 @@ import uk.co.essarsoftware.par.cards.DrawPile;
 import uk.co.essarsoftware.par.engine.core.events.EngineEventQueue;
 import uk.co.essarsoftware.par.engine.core.events.TaskFactory;
 import uk.co.essarsoftware.par.game.Game;
+import uk.co.essarsoftware.par.game.PlaySet;
 import uk.co.essarsoftware.par.game.PlayerList;
 
 @SpringBootApplication
@@ -43,6 +44,13 @@ public class EngineApplication
     public Game initGame() {
 
         return new Game(UUID.randomUUID().toString());
+        
+    }
+
+    @Bean
+    public PlaySet initPlaySet() {
+
+        return new PlaySet();
         
     }
 
