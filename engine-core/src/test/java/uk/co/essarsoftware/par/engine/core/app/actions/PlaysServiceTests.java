@@ -26,6 +26,14 @@ import uk.co.essarsoftware.par.game.Player;
 public class PlaysServiceTests
 {
 
+    private static Card[] invalidPlay() {
+        return new Card[] {
+            Card.as(Suit.CLUBS, Value.ACE),
+            Card.as(Suit.DIAMONDS, Value.TWO),
+            Card.as(Suit.HEARTS, Value.THREE)
+        };
+    }
+
     private static Card[] validPrial() {
         return new Card[] {
             Card.as(Suit.CLUBS, Value.ACE),
@@ -212,6 +220,53 @@ public class PlaysServiceTests
         };
 
         assertThrows(InvalidPlayException.class, () -> playsSvc.buildPlayForPlayer(player, cards), "Building Play invalid cards should throw exception");
+
+    }
+
+    @Test
+    public void testIsValidPlayValidPrial() {
+
+        PlaysService playsSvc = new PlaysService(new PlaySet());
+
+        // Create play and add cards
+        Play play = new PrialPlay();
+        Arrays.stream(validPrial()).forEach(play::addCard);
+
+        assertTrue(playsSvc.isValidPlay(play), "Play is valid Prial");
+
+    }
+
+    @Test
+    public void testIsValidPlayValidRun() {
+
+        PlaysService playsSvc = new PlaysService(new PlaySet());
+
+        // Create play and add cards
+        Play play = new RunPlay();
+        Arrays.stream(validRun()).forEach(play::addCard);
+
+        assertTrue(playsSvc.isValidPlay(play), "Play is valid Run");
+        
+    }
+
+    @Test
+    public void testIsValidNullIsNotValidPlay() {
+
+        PlaysService playsSvc = new PlaysService(new PlaySet());
+
+        assertFalse(playsSvc.isValidPlay(null), "Null object is not a valid Play");
+        
+    }
+
+    @Test
+    public void testIsValidPlayEmptyPlayIsNotValidPlay() {
+
+        PlaysService playsSvc = new PlaysService(new PlaySet());
+
+        // Create play and add cards
+        Play play = new PrialPlay();
+
+        assertFalse(playsSvc.isValidPlay(play), "Empty Play is not a valid Play");
 
     }
 }

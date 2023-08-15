@@ -1,6 +1,7 @@
 package uk.co.essarsoftware.par.engine.core.app.actions;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,13 +59,19 @@ public class PlaysService
             .forEach(c -> addCardToPlay(play, c));
 
         // Clean up if we've not completed a valid play
-        if (! (play.isPrial() || play.isRun())) {
+        if (! isValidPlay(play)) {
 
             play.reset();
 
         }
 
         return play;
+
+    }
+
+    boolean isValidPlay(Play play) {
+
+        return Objects.nonNull(play) && (play.isPrial() || play.isRun());
 
     }
 
@@ -82,7 +89,7 @@ public class PlaysService
         // Try and find an available play
         Play play = Arrays.stream(plays.getAvailablePlays(player))
             .map(p -> buildPlay(p, cards))
-            .filter(p -> p.isPrial() || p.isRun())
+            .filter(this::isValidPlay)
             .findAny()
             .orElseThrow(() -> new InvalidPlayException(String.format("Cards %s cannot be used to build a valid play", CardEncoder.asShortString(cards))));
 
