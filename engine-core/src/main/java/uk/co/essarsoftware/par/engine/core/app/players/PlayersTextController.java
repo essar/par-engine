@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import reactor.core.publisher.Mono;
-import uk.co.essarsoftware.par.engine.core.app.PlayersService;
 
 @RestController
 @RequestMapping(produces = MediaType.TEXT_PLAIN_VALUE)

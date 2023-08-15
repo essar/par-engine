@@ -50,7 +50,7 @@ public class CreatePlayerResponse
     @Override
     public String toString() {
 
-        return String.format("Created %s", player);
+        return String.format("Created Player %s", player.getPlayerID());
 
     }
 }

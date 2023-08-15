@@ -56,18 +56,10 @@ public class GetPlayerResponse
 
     }
 
-    public String asTable() {
-
-        return String.format("%10S | %30S | %10S | %6S | %12S", "PLAYER ID", "PLAYER NAME", "STATE", "HAND", "FLAGS")
-            + String.format("%n-----------+--------------------------------+------------+--------+-------------")
-            + String.format("%n%10s | %30s | %10s | %6d | %12s", getPlayerID(), getPlayerName(), getPlayerState(), getHandSize(), String.join(",", player.getFlags()));
-
-    }
-
     @Override
     public String toString() {
 
-        return player.toString();
+        return String.format("%s:  %s [%s] %d card(s)  %s", getPlayerID(), getPlayerName(), getPlayerState(), getHandSize(), String.join(",", player.getFlags()));
 
     }
 }

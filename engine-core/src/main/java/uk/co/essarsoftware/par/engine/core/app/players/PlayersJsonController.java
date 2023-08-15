@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import reactor.core.publisher.Mono;
-import uk.co.essarsoftware.par.engine.core.app.PlayersService;
 import uk.co.essarsoftware.par.game.Game;
 
 @RestController

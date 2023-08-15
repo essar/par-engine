@@ -7,7 +7,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import uk.co.essarsoftware.par.engine.core.app.CardsService;
-import uk.co.essarsoftware.par.engine.core.app.PlayersService;
+import uk.co.essarsoftware.par.engine.core.app.players.PlayersService;
 import uk.co.essarsoftware.par.game.Player;
 import uk.co.essarsoftware.par.game.PlayerState;
 

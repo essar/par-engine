@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import uk.co.essarsoftware.par.engine.core.app.CardsService;
-import uk.co.essarsoftware.par.engine.core.app.PlayersService;
+import uk.co.essarsoftware.par.engine.core.app.players.PlayersService;
 
 @Service
 public class TaskFactory

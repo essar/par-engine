@@ -7,6 +7,7 @@ import uk.co.essarsoftware.par.cards.Card;
 import uk.co.essarsoftware.par.cards.DiscardPile;
 import uk.co.essarsoftware.par.cards.DrawPile;
 import uk.co.essarsoftware.par.cards.Pack;
+import uk.co.essarsoftware.par.engine.core.app.players.PlayersService;
 
 @Service
 public class CardsService

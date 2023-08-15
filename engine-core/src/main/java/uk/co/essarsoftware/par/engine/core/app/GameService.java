@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import uk.co.essarsoftware.par.engine.core.app.players.PlayersService;
 import uk.co.essarsoftware.par.engine.core.events.EngineEventQueue;
 import uk.co.essarsoftware.par.engine.core.events.RoundStartedEvent;
 import uk.co.essarsoftware.par.game.Game;

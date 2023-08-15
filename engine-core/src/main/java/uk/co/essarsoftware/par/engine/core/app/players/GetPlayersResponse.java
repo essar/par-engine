@@ -4,9 +4,15 @@ import java.util.stream.Stream;
 
 import uk.co.essarsoftware.par.game.Player;
 
-public class GetPlayersResponse implements PlayersResponse
+public class GetPlayersResponse
 {
     private final Stream<Player> players;
+
+    private static String formatPlayer(PlayerStubResponse player) {
+
+        return player.toString("%8s: %-30s [%10s]");
+
+    }
 
     public GetPlayersResponse(Stream<Player> players) {
 
@@ -23,7 +29,7 @@ public class GetPlayersResponse implements PlayersResponse
     @Override
     public String toString() {
 
-        String[] allPlayers = players.map(Player::toString).map(s -> String.format("  --> %s", s)).toArray(String[]::new);
+        String[] allPlayers = getPlayers().map(GetPlayersResponse::formatPlayer).map(s -> String.format("  --> %s", s)).toArray(String[]::new);
         return String.format("%d Player(s)%n%s", allPlayers.length, String.join("\n", allPlayers));
 
     }

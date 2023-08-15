@@ -35,7 +35,9 @@ public class GetPlayerHandResponse
     @Override
     public String toString() {
 
-        return String.join(",", getHand().map(CardEncoder::asShortString).toArray(String[]::new));
+        return String.join(",", getHand()
+            .map(CardEncoder::asShortString)
+            .toArray(String[]::new));
 
     }
 }

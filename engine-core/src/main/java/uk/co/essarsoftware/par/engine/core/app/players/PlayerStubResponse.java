@@ -35,4 +35,17 @@ public class PlayerStubResponse
         return player.getPlayerState().name();
 
     }
+
+    String toString(String format) {
+
+        return String.format(format, getPlayerID(), getPlayerName(), getPlayerState());
+
+    }
+
+    @Override
+    public String toString() {
+
+        return toString("%s:  %s  [%s]");
+
+    }
 }

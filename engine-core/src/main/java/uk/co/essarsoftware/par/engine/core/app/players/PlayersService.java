@@ -1,4 +1,4 @@
-package uk.co.essarsoftware.par.engine.core.app;
+package uk.co.essarsoftware.par.engine.core.app.players;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -7,6 +7,10 @@ import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import uk.co.essarsoftware.par.engine.core.app.GameStateException;
+import uk.co.essarsoftware.par.engine.core.app.InvalidPlayerStateException;
+import uk.co.essarsoftware.par.engine.core.app.NotCurrentPlayerException;
+import uk.co.essarsoftware.par.engine.core.app.UnknownPlayerException;
 import uk.co.essarsoftware.par.engine.core.events.EngineEventQueue;
 import uk.co.essarsoftware.par.engine.core.events.PlayerStateChangeEvent;
 import uk.co.essarsoftware.par.game.Game;
