@@ -1,8 +1,11 @@
 package uk.co.essarsoftware.par.engine.core.app;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -53,6 +56,18 @@ public class CardEncoder
 
     public static Card asCard(String shortStr) {
 
+        Pattern p = Pattern.compile("^([2-9]|10|[AJQK])([CDHS])$");
+        Matcher m = p.matcher(shortStr);
+
+        if (m.matches()) {
+
+            String valueStr = m.group(1);
+            String suitStr = m.group(2);
+
+            return Card.as(stringToSuit.get(suitStr), stringToValue.get(valueStr));
+
+        }
+        
         if (shortStr.length() == 2) {
 
             String valueStr = shortStr.substring(0, 1);
@@ -66,10 +81,28 @@ public class CardEncoder
 
     }
 
+    public static Card[] asCards(String[] shortStr) {
+
+        return Arrays.stream(shortStr).map(CardEncoder::asCard).toArray(Card[]::new);
+
+    }
+
+    public static Card[] asCards(ArrayList<String> shortStr) {
+
+        return shortStr.stream().map(CardEncoder::asCard).toArray(Card[]::new);
+
+    }
+
     public static String asShortString(Card card) {
         
         return card.isJoker() ? "*J" : String.format("%s%s", valueStrings.get(card.getValue()), suitStrings.get(card.getSuit()));
         
+    }
+
+    public static String asShortString(Card[] cards) {
+
+        return String.join(",", Arrays.stream(cards).map(CardEncoder::asShortString).toList());
+
     }
 
     public static class CardSerializer extends JsonSerializer<Card>
