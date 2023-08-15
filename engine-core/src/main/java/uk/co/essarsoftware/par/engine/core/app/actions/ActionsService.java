@@ -1,14 +1,7 @@
 package uk.co.essarsoftware.par.engine.core.app.actions;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
@@ -20,10 +13,8 @@ import uk.co.essarsoftware.par.cards.Card;
 import uk.co.essarsoftware.par.cards.DiscardPile;
 import uk.co.essarsoftware.par.cards.DrawPile;
 import uk.co.essarsoftware.par.cards.Play;
-import uk.co.essarsoftware.par.cards.PrialPlay;
 import uk.co.essarsoftware.par.engine.core.app.CardEncoder;
 import uk.co.essarsoftware.par.engine.core.app.CardNotInHandException;
-import uk.co.essarsoftware.par.engine.core.app.InvalidPlayException;
 import uk.co.essarsoftware.par.engine.core.app.actions.Action.DiscardAction;
 import uk.co.essarsoftware.par.engine.core.app.actions.Action.PickupDiscardAction;
 import uk.co.essarsoftware.par.engine.core.app.actions.Action.PickupDrawAction;
@@ -37,7 +28,6 @@ import uk.co.essarsoftware.par.engine.core.events.PlayerPickupDrawEvent;
 import uk.co.essarsoftware.par.engine.core.events.PlayerPlayCardsEvent;
 import uk.co.essarsoftware.par.engine.core.events.PlayerStateChangeEvent;
 import uk.co.essarsoftware.par.engine.core.events.RoundStartedEvent;
-import uk.co.essarsoftware.par.game.PlaySet;
 import uk.co.essarsoftware.par.game.Player;
 import uk.co.essarsoftware.par.game.PlayerState;
 
@@ -50,51 +40,19 @@ public class ActionsService
     private final DiscardPile discardPile;
     private final DrawPile drawPile;
     private final EngineEventQueue eventQueue;
-    private final PlaySet plays;
-    private final PlaysService playsSvc;
+    private final PlaysService plays;
     private final PlayersService players;
 
     private int sequenceNo = 1;
 
     @Autowired
-    public ActionsService(final EngineEventQueue eventQueue, final PlayersService players, final PlaySet plays, final PlaysService playsSvc, final DrawPile drawPile, final DiscardPile discardPile) {
+    public ActionsService(final EngineEventQueue eventQueue, final PlayersService players, final PlaysService playsSvc, final DrawPile drawPile, final DiscardPile discardPile) {
 
         this.eventQueue = eventQueue;
         this.players = players;
-        this.plays = plays;
-        this.playsSvc = playsSvc;
+        this.plays = playsSvc;
         this.drawPile = drawPile;
         this.discardPile = discardPile;
-
-    }
-
-    private Play buildPlay(Player player, Play play, Card[] cards) {
-
-        // Check if play is empty and refuse otherwise
-        if (play.size() != 0) {
-
-            _LOG.warn("Cannot add cards to existing play");
-            return play;
-
-        }
-
-        // For each card provided, sort them by the order specified by the play and try to add to the play and check the outcome
-        Arrays.stream(cards)
-            .sorted(play)
-            .forEach(c -> {
-                try {
-                    _LOG.debug("Trying to add {} to {} {}", c, play.getClass().getSimpleName(), CardEncoder.asShortString(play.getCards()));
-                    play.addCard(c);
-                } catch (IllegalArgumentException ie) {
-
-                    // Empty the play
-                    play.reset();
-                    _LOG.debug(String.format("Card %s cannot be used to build a %s", CardEncoder.asShortString(c), play.getClass().getSimpleName()));
-
-                }
-            });
-
-        return play;
 
     }
 
@@ -277,13 +235,13 @@ public class ActionsService
             .toArray(Card[]::new);
 
         // Try and find an available play
-        Play play = playsSvc.buildPlayForPlayer(currentPlayer, cards);
+        Play play = plays.buildPlayForPlayer(currentPlayer, cards);
 
         // Remove cards from player hand
         Arrays.stream(cards).forEach(currentPlayer.getHand()::removeCard);
         
         // Change player state
-        if (playsSvc.hasAvailablePlaysRemaining(currentPlayer)) {
+        if (plays.hasAvailablePlaysRemaining(currentPlayer)) {
 
             // Player has available plays remaining
             players.setPlayerState(currentPlayer, PlayerState.PLAYING);
