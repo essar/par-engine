@@ -56,6 +56,16 @@ public class RunPlayTests
     }
 
     @Test
+    public void testAddPackCard() {
+
+        RunPlay play = new RunPlay();
+        Card[] cards = new Card[] { Pack.generatePack().getCards()[0] };
+        play.addCard(cards[0]);
+        assertArrayEquals(cards, play.getCards(), "Play should contain pack card");
+
+    }
+
+    @Test
     public void testResetLeavesEmptyPlay() {
 
         RunPlay play = new RunPlay();

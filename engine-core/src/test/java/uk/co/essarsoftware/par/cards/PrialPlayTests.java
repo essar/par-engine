@@ -79,6 +79,16 @@ public class PrialPlayTests
     }
 
     @Test
+    public void testAddPackCard() {
+
+        PrialPlay play = new PrialPlay();
+        Card[] cards = new Card[] { Pack.generatePack().getCards()[0] };
+        play.addCard(cards[0]);
+        assertArrayEquals(cards, play.getCards(), "Play should contain pack card");
+
+    }
+
+    @Test
     public void testAddBoundJokerNotInAllowableCardsRaisesException() {
 
         PrialPlay play = new PrialPlay();

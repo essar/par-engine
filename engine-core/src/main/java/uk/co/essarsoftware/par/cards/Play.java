@@ -78,7 +78,7 @@ public abstract class Play implements Comparator<Card>
 
             }
 
-            if (!Arrays.stream(getAllowableCards()).anyMatch(card::equals)) {
+            if (!Arrays.stream(getAllowableCards()).anyMatch(c -> c.equals(card))) {
 
                 throw new IllegalArgumentException("Cannot add card to play");
 
