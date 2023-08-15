@@ -14,14 +14,14 @@ public class ActionRequest
     private Integer actionSequence;
     private String gameID, playerID;
 
-    <E> E getActionParameter(String key, Class<E> clz) {
+    <E> E getRequestParameter(String key, Class<E> clz) {
 
         return clz.cast(params.get(key));
 
     }
 
     @JsonAnySetter
-    public void addActionParameter(String key, Object value) {
+    public void addRequestParameter(String key, Object value) {
 
         params.put(key, value);
 
