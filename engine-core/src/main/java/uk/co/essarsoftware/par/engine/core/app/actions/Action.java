@@ -4,10 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonSetter;
-
 import uk.co.essarsoftware.par.cards.Card;
 import uk.co.essarsoftware.par.engine.core.app.CardEncoder;
 
@@ -15,54 +11,84 @@ abstract class Action<R>
 {
     
     private final Map<String, Object> params = new HashMap<>();
-    private String playerID;
+    private final Integer actionSequence;
+    private final String playerID;
 
-    abstract void setResult(R card);
+    protected Action(ActionRequest request) {
 
-    boolean validateAction() {
+        if (Objects.isNull(request.getPlayerID())) {
 
-        return true;
+            throw new InvalidActionRequestException("Missing player_id");
+
+        }
+        this.playerID = request.getPlayerID();
+
+        if (Objects.isNull(request.getActionSequence())) {
+
+            throw new InvalidActionRequestException("Missing action_sequence");
+
+        }
+        this.actionSequence = request.getActionSequence();
 
     }
 
-    @JsonAnySetter
-    public void addActionParameter(String key, Object value) {
+    abstract void setResult(R card);
 
+    void addActionParameter(String key, Object value) {
+
+        if (value == null) {
+
+            throw new InvalidActionRequestException(String.format("Missing parameter: %s", key));
+
+        }
         params.put(key, value);
 
     }
 
-    public <E> E getActionParameter(String key, Class<E> clz) {
+    Integer getActionSequence() {
+
+        return actionSequence;
+        
+    }
+
+    <E> E getActionParameter(String key, Class<E> clz) {
 
         return clz.cast(params.get(key));
 
     }
 
-    @JsonGetter("player_id")
+    boolean validateActionParameters() {
+
+        return true;
+
+    }
+
     public String getPlayerID() {
 
         return playerID;
 
     }
 
-    public void setPlayerID(String playerID) {
-
-        this.playerID = playerID;
-
-    }
-
 
     public static class DiscardAction extends Action<Card>
     {
-        @Override
-        void setResult(Card card) {
 
-            setCard(card);
+        public DiscardAction(ActionRequest request) {
+
+            super(request);
+            addActionParameter("card", CardEncoder.asCard(request.getActionParameter("card", String.class)));
 
         }
 
         @Override
-        boolean validateAction() {
+        void setResult(Card card) {
+
+            addActionParameter("card", card);
+
+        }
+
+        @Override
+        boolean validateActionParameters() {
 
             return Objects.nonNull(getCard());
             
@@ -71,13 +97,6 @@ abstract class Action<R>
         public Card getCard() {
 
             return getActionParameter("card", Card.class);
-
-        }
-
-        @JsonSetter("card")
-        public void setCard(Card card) {
-
-            addActionParameter("card", card);
 
         }
         
@@ -91,6 +110,13 @@ abstract class Action<R>
 
     public static class PickupDiscardAction extends Action<Card>
     {
+
+        public PickupDiscardAction(ActionRequest request) {
+
+            super(request);
+
+        }
+
         @Override
         void setResult(Card card) {
 
@@ -104,6 +130,7 @@ abstract class Action<R>
 
         }
 
+        @Override
         public String toString() {
 
             return String.format("%s pickup from discard pile", getPlayerID());
@@ -113,6 +140,13 @@ abstract class Action<R>
 
     public static class PickupDrawAction extends Action<Card>
     {
+
+        public PickupDrawAction(ActionRequest request) {
+
+            super(request);
+
+        }
+
         @Override
         void setResult(Card card) {
 

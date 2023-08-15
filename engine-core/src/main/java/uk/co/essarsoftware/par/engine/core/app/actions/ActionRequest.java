@@ -3,32 +3,32 @@ package uk.co.essarsoftware.par.engine.core.app.actions;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonSetter;
 
-public class ActionRequest<A extends Action<?>>
+public class ActionRequest
 {
 
-    private final Map<String, A> params = new HashMap<>();
+    private final Map<String, Object> params = new HashMap<>();
     private ActionType actionType;
     private Integer actionSequence;
-    private String gameID;
+    private String gameID, playerID;
 
-    @JsonSetter("action_params")
-    void unpackParams(Map<String, A> params) {
+    <E> E getActionParameter(String key, Class<E> clz) {
 
-        this.params.putAll(params);
+        return clz.cast(params.get(key));
 
     }
 
-    public A getAction() {
+    @JsonAnySetter
+    public void addActionParameter(String key, Object value) {
 
-        return actionType == null ? null : params.get(actionType.name().toLowerCase());
+        params.put(key, value);
 
     }
 
     @JsonGetter("action_params")
-    public Map<String, A> getActionParams() {
+    public Map<String, Object> getActionParams() {
 
         return params;
 
@@ -55,6 +55,13 @@ public class ActionRequest<A extends Action<?>>
 
     }
 
+    @JsonGetter("player_id")
+    public String getPlayerID() {
+
+        return playerID;
+
+    }
+
     public void setSequence(Integer actionSequence) {
 
         this.actionSequence = actionSequence;
@@ -73,9 +80,15 @@ public class ActionRequest<A extends Action<?>>
 
     }
 
+    public void setPlayerID(String playerID) {
+
+        this.playerID = playerID;
+
+    }
+
     public String toString() {
 
-        return String.format("%s (seq:%04x)", getAction(), actionSequence);
+        return String.format("%s (seq:%04x)", getActionType(), getActionSequence());
 
     }
 }

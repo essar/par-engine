@@ -9,17 +9,17 @@ public class ActionResponse
 {
 
     private final Action<?> action;
-    private final ActionType actionType;
-    private final int actionSequence;
+    private ActionType actionType;
+    private int actionSequence;
     private int nextActionSequence;
 
-    public <A extends Action<?>> ActionResponse(final ActionRequest<A> request, final A action) {
+    public <A extends Action<?>> ActionResponse(final A action) {
 
         this.action = action;
 
         // Populate from request object
-        actionSequence = request.getActionSequence();
-        actionType = request.getActionType();
+        //actionSequence = request.getActionSequence();
+        //actionType = request.getActionType();
      
     }
 

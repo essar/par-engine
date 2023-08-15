@@ -1,6 +1,5 @@
 package uk.co.essarsoftware.par.engine.core.app.actions;
 
-import java.util.Objects;
 import java.util.function.Function;
 
 import javax.annotation.PostConstruct;
@@ -52,54 +51,32 @@ public class ActionsService
 
     }
 
+    private boolean validateSequence(Action action) {
 
-    private static boolean validateAction(Action<?> action, String message) {
+        _LOG.debug("Validating sequence number");
+        if (action.getActionSequence() == sequenceNo) {
 
-        if (Objects.nonNull(action) && action.validateAction()) {
-
-            return true;
-
-        }
-        throw new InvalidActionRequestException(message);
-
-    }
-
-    private static boolean validateNotNull(Object obj, String message) {
-
-        if (Objects.nonNull(obj)) {
-
-            return true;
+            return true;    
 
         }
-        throw new InvalidActionRequestException(message);
-
-    }
-
-    static boolean validateRequest(ActionRequest<?> request) {
-
-        return validateNotNull(request.getActionType(), "Missing action_type")
-            && validateNotNull(request.getActionSequence(), "Missing action_sequence")
-            && validateAction(request.getAction(), "Missing action parameters");
-
+        throw new ActionOutOfSequenceException(action.getActionSequence(), sequenceNo);
+    
     }
 
 
-    synchronized <A extends Action<E>, E> ActionResponse runAction(Function<A, E> actionFunction, ActionRequest<A> request) {
+    synchronized <A extends Action<E>, E> ActionResponse runAction(Function<A, E> actionFunction, A action) {
 
-        _LOG.info("[\u001B[36m{}\u001B[0m] {}", request.getClass().getSimpleName(), request);
+        _LOG.info("[\u001B[36m{}\u001B[0m] {}", action.getClass().getSimpleName(), action);
 
-        if (request.getActionSequence() != sequenceNo) {
+        // Validate sequence number
+        validateSequence(action);
 
-            throw new ActionOutOfSequenceException(request.getActionSequence(), sequenceNo);
-
-        }
         // Execute action function
-        A action = request.getAction();
         E result = actionFunction.apply(action);
         action.setResult(result);
 
         // Create response
-        ActionResponse response = new ActionResponse(request, action);
+        ActionResponse response = new ActionResponse(action);
 
         // Increment sequence if action is successful
         sequenceNo ++;
