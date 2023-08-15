@@ -1,6 +1,13 @@
 package uk.co.essarsoftware.par.engine.core.app.actions;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -12,19 +19,25 @@ import org.springframework.stereotype.Service;
 import uk.co.essarsoftware.par.cards.Card;
 import uk.co.essarsoftware.par.cards.DiscardPile;
 import uk.co.essarsoftware.par.cards.DrawPile;
+import uk.co.essarsoftware.par.cards.Play;
+import uk.co.essarsoftware.par.cards.PrialPlay;
 import uk.co.essarsoftware.par.engine.core.app.CardEncoder;
 import uk.co.essarsoftware.par.engine.core.app.CardNotInHandException;
+import uk.co.essarsoftware.par.engine.core.app.InvalidPlayException;
 import uk.co.essarsoftware.par.engine.core.app.actions.Action.DiscardAction;
 import uk.co.essarsoftware.par.engine.core.app.actions.Action.PickupDiscardAction;
 import uk.co.essarsoftware.par.engine.core.app.actions.Action.PickupDrawAction;
+import uk.co.essarsoftware.par.engine.core.app.actions.Action.PlayCardsAction;
 import uk.co.essarsoftware.par.engine.core.app.players.PlayersService;
 import uk.co.essarsoftware.par.engine.core.events.EngineEventQueue;
 import uk.co.essarsoftware.par.engine.core.events.NextPlayerEvent;
 import uk.co.essarsoftware.par.engine.core.events.PlayerDiscardEvent;
 import uk.co.essarsoftware.par.engine.core.events.PlayerPickupDiscardEvent;
 import uk.co.essarsoftware.par.engine.core.events.PlayerPickupDrawEvent;
+import uk.co.essarsoftware.par.engine.core.events.PlayerPlayCardsEvent;
 import uk.co.essarsoftware.par.engine.core.events.PlayerStateChangeEvent;
 import uk.co.essarsoftware.par.engine.core.events.RoundStartedEvent;
+import uk.co.essarsoftware.par.game.PlaySet;
 import uk.co.essarsoftware.par.game.Player;
 import uk.co.essarsoftware.par.game.PlayerState;
 
@@ -37,18 +50,66 @@ public class ActionsService
     private final DiscardPile discardPile;
     private final DrawPile drawPile;
     private final EngineEventQueue eventQueue;
+    private final PlaySet plays;
+    private final PlaysService playsSvc;
     private final PlayersService players;
 
     private int sequenceNo = 1;
 
     @Autowired
-    public ActionsService(final EngineEventQueue eventQueue, final PlayersService players, final DrawPile drawPile, final DiscardPile discardPile) {
+    public ActionsService(final EngineEventQueue eventQueue, final PlayersService players, final PlaySet plays, final PlaysService playsSvc, final DrawPile drawPile, final DiscardPile discardPile) {
 
         this.eventQueue = eventQueue;
         this.players = players;
+        this.plays = plays;
+        this.playsSvc = playsSvc;
         this.drawPile = drawPile;
         this.discardPile = discardPile;
 
+    }
+
+    private Play buildPlay(Player player, Play play, Card[] cards) {
+
+        // Check if play is empty and refuse otherwise
+        if (play.size() != 0) {
+
+            _LOG.warn("Cannot add cards to existing play");
+            return play;
+
+        }
+
+        // For each card provided, sort them by the order specified by the play and try to add to the play and check the outcome
+        Arrays.stream(cards)
+            .sorted(play)
+            .forEach(c -> {
+                try {
+                    _LOG.debug("Trying to add {} to {} {}", c, play.getClass().getSimpleName(), CardEncoder.asShortString(play.getCards()));
+                    play.addCard(c);
+                } catch (IllegalArgumentException ie) {
+
+                    // Empty the play
+                    play.reset();
+                    _LOG.debug(String.format("Card %s cannot be used to build a %s", CardEncoder.asShortString(c), play.getClass().getSimpleName()));
+
+                }
+            });
+
+        return play;
+
+    }
+
+    private Card resolveCardInPlayerHand(Player player, Card card) {
+
+        // Resolve card from player hand
+        Card handCard = player.getHand().findCard(card);
+        if (handCard == null) {
+
+            // Card hasn't been found in hand
+            throw new CardNotInHandException(String.format("Card %s not found in player hand", CardEncoder.asShortString(card)));
+
+        }
+        return handCard;
+        
     }
 
     private boolean validateSequence(Action action) {
@@ -149,24 +210,18 @@ public class ActionsService
         Player currentPlayer = players.validateIsCurrentPlayerAndInState(action.getPlayerID(), PlayerState.PLAYING);
 
         // Resolve card from player hand
-        Card handCard = currentPlayer.getHand().findCard(action.getCard());
-        if (handCard == null) {
-
-            // Card hasn't been found in hand
-            throw new CardNotInHandException(String.format("Card %s not found in player hand", CardEncoder.asShortString(action.getCard())));
-
-        }
-        currentPlayer.getHand().removeCard(handCard);
+        Card card = resolveCardInPlayerHand(currentPlayer, action.getCard());
+        currentPlayer.getHand().removeCard(card);
 
         // Add card to discard pile
-        discardPile.discard(handCard);
+        discardPile.discard(card);
         
         // Change player state
         players.setPlayerState(currentPlayer, PlayerState.DISCARDED);
 
-        eventQueue.queueEvent(new PlayerDiscardEvent(currentPlayer, handCard));
+        eventQueue.queueEvent(new PlayerDiscardEvent(currentPlayer, card));
 
-        return handCard;
+        return card;
 
     }
 
@@ -207,6 +262,42 @@ public class ActionsService
         eventQueue.queueEvent(new PlayerPickupDrawEvent(currentPlayer));
 
         return card;
+
+    }
+
+    public Play playCards(final PlayCardsAction action) {
+
+        // Check specified player is current player and in correct state
+        Player currentPlayer = players.validateIsCurrentPlayerAndInState(action.getPlayerID(), PlayerState.PLAYING);
+
+        // Get cards and resolve any jokers
+        // TODO Resolve jokers
+        Card[] cards = Arrays.stream(action.getCards())
+            .map(c -> resolveCardInPlayerHand(currentPlayer, c))
+            .toArray(Card[]::new);
+
+        // Try and find an available play
+        Play play = playsSvc.buildPlayForPlayer(currentPlayer, cards);
+
+        // Remove cards from player hand
+        Arrays.stream(cards).forEach(currentPlayer.getHand()::removeCard);
+        
+        // Change player state
+        if (playsSvc.hasAvailablePlaysRemaining(currentPlayer)) {
+
+            // Player has available plays remaining
+            players.setPlayerState(currentPlayer, PlayerState.PLAYING);
+
+        } else {
+        
+            // Player has played all of their plays so now has to discard
+            players.setPlayerState(currentPlayer, PlayerState.DISCARD);
+
+        }
+
+        eventQueue.queueEvent(new PlayerPlayCardsEvent(currentPlayer, play));
+
+        return play;
 
     }
 }

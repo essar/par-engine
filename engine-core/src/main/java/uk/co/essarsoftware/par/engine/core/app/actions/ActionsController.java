@@ -12,6 +12,7 @@ import reactor.core.publisher.Mono;
 import uk.co.essarsoftware.par.engine.core.app.actions.Action.DiscardAction;
 import uk.co.essarsoftware.par.engine.core.app.actions.Action.PickupDiscardAction;
 import uk.co.essarsoftware.par.engine.core.app.actions.Action.PickupDrawAction;
+import uk.co.essarsoftware.par.engine.core.app.actions.Action.PlayCardsAction;
 
 @RestController
 @RequestMapping(consumes = "application/json", produces = "application/json")
@@ -66,6 +67,17 @@ public class ActionsController
             //.filter(ActionsService::validateRequest)
             .map(PickupDrawAction::new)
             .map(a -> actions.runAction(actions::pickupDraw, a))
+            .onErrorResume(ActionsController::handleEngineException);
+
+    }
+
+    @PostMapping(path = "/actions/playCards")
+    public Mono<ActionResponse> playCards(@RequestBody final ActionRequest request) {
+
+        return Mono.just(request)
+            //.filter(ActionsService::validateRequest)
+            .map(PlayCardsAction::new)
+            .map(a -> actions.runAction(actions::playCards, a))
             .onErrorResume(ActionsController::handleEngineException);
 
     }

@@ -1,10 +1,10 @@
 package uk.co.essarsoftware.par.engine.core.app.actions;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Stream;
+import java.util.function.Function;
 
 import uk.co.essarsoftware.par.cards.Card;
 import uk.co.essarsoftware.par.cards.Play;
@@ -50,13 +50,19 @@ abstract class Action<R>
 
     protected <E> void copyActionParameter(ActionRequest request, String key, Class<E> clz, boolean required) {
 
+        copyActionParameter(request, key, clz, required, e -> e);
+
+    }
+
+    protected <E> void copyActionParameter(ActionRequest request, String key, Class<E> clz, boolean required, Function<E, ?> mappingFunction) {
+
         E value = request.getRequestParameter(key, clz);
         if (required && value == null) {
 
             throw new InvalidActionRequestException(String.format("Missing parameter: %s", key));
 
         }
-        params.put(key, value);
+        params.put(key, mappingFunction.apply(value));
 
     }
 
@@ -179,6 +185,44 @@ abstract class Action<R>
         public String toString() {
 
             return String.format("%s pickup from draw pile", getPlayerID());
+
+        }
+    }
+
+    public static class PlayCardsAction extends Action<Play>
+    {
+
+        public PlayCardsAction(ActionRequest request) {
+
+            super(request);
+            copyActionParameter(request, "cards", ArrayList.class, true, CardEncoder::asCards);
+            copyActionParameter(request, "joker_bindings", ArrayList.class, true, CardEncoder::asCards);
+            
+        }
+
+        @Override
+        void setResult(Play play) {
+
+            addActionParameter("play", play);
+
+        }
+
+        public Card[] getCards() {
+
+            return getActionParameter("cards", Card[].class);
+
+        }
+
+        public Card[] getJokerBindings() {
+
+            return getActionParameter("joker_bindings", Card[].class);
+            
+        }
+
+        @Override
+        public String toString() {
+
+            return String.format("%s playing cards %s", getPlayerID(), CardEncoder.asShortString(getCards()));
 
         }
     }
