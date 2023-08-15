@@ -1,10 +1,15 @@
 package uk.co.essarsoftware.par.game;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class Game
 {
+
+    @Autowired
+    private PlayerList players;
+
     private final String gameID;
     private int turnCount;
     private Round currentRound;
@@ -17,15 +22,47 @@ public class Game
 
     }
 
+    public Player getCurrentPlayer() {
+
+        if (getCurrentRound() == Round.START || getCurrentRound() == Round.END) {
+
+            return null;
+
+        } else {
+
+            return players == null ? null : players.getCurrentPlayer();
+
+        }        
+    }
+
     public Round getCurrentRound() {
 
         return currentRound;
 
     }
 
+    public Player getDealer() {
+
+        if (getCurrentRound() == Round.START || getCurrentRound() == Round.END) {
+
+            return null;
+
+        } else {
+
+            return players == null ? null : players.getDealer();
+
+        }
+    }
+
     public String getGameID() {
 
         return gameID;
+
+    }
+
+    public int getPlayerCount() {
+
+        return players == null ? 0 : players.size();
 
     }
 

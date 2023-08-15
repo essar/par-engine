@@ -1,4 +1,4 @@
-package uk.co.essarsoftware.par.engine.core.app;
+package uk.co.essarsoftware.par.engine.core.app.players;
 
 import java.util.stream.Stream;
 
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 
 import uk.co.essarsoftware.par.game.Player;
 
-public class GetPlayersResponse
+public class GetPlayersResponse implements PlayersResponse
 {
     private final Stream<Player> players;
 
