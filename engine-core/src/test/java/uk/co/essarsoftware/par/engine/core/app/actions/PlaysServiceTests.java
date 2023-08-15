@@ -94,13 +94,7 @@ public class PlaysServiceTests
         PlaySet plays = new PlaySet();
         PlaysService playsSvc = new PlaysService(plays);
 
-        Card[] invalidPlay = new Card[] {
-            Card.as(Suit.CLUBS, Value.ACE),
-            Card.as(Suit.DIAMONDS, Value.TWO),
-            Card.as(Suit.HEARTS, Value.THREE)
-        };
-
-        Play play = playsSvc.buildPlay(new PrialPlay(), invalidPlay);
+        Play play = playsSvc.buildPlay(new PrialPlay(), invalidPlay());
 
         assertFalse(play.isPrial(), "Play is not a valid Prial");
         assertFalse(play.isRun(), "Play is not a valid Run");
