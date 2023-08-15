@@ -1,4 +1,4 @@
-package uk.co.essarsoftware.par.engine.core.app.actions;
+package uk.co.essarsoftware.par.engine.core.app;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -14,7 +14,6 @@ import uk.co.essarsoftware.par.cards.PrialPlay;
 import uk.co.essarsoftware.par.cards.RunPlay;
 import uk.co.essarsoftware.par.cards.Suit;
 import uk.co.essarsoftware.par.cards.Value;
-import uk.co.essarsoftware.par.engine.core.app.InvalidPlayException;
 import uk.co.essarsoftware.par.game.PlaySet;
 import uk.co.essarsoftware.par.game.Player;
 
