@@ -1,0 +1,45 @@
+# Run all unit tests on push on any branch
+# Displays test results, fails check job on test failures
+
+name: Unit Tests
+on: [push]
+permissions:
+  contents: read
+  checks: write
+  packages: read
+jobs:
+  run-unit-tests:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: temurin
+          cache: maven
+      
+      - name: Build
+        run: mvn --batch-mode --update-snapshots -DskipTests compile
+      
+      - name: Test
+        run: mvn --batch-mode -Dmaven.test.failure.ignore=true test
+      
+      - name: Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: Test Results
+          path: '**/target/surefire-reports/*.xml'
+          reporter: java-junit
+          fail-on-error: true
+     
+      - name: Save Test Results
+        uses: actions/upload-artifact@v3
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: surefire-reports
+          path: '**/target/surefire-reports/*.xml'

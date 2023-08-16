@@ -21,7 +21,7 @@
         
     <module>engine-core</module>
 
-    <module>engine-auth</module>
+    <!--<module>engine-auth</module>-->
       
   </modules>
   
