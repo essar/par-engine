@@ -2,7 +2,7 @@ package uk.co.essarsoftware.par.engine.core.app;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 
-import uk.co.essarsoftware.par.game.Round;
+import uk.co.essarsoftware.par.engine.game.Round;
 
 public class StartRoundResponse
 {

@@ -17,11 +17,11 @@ import uk.co.essarsoftware.par.cards.DrawPile;
 import uk.co.essarsoftware.par.cards.Suit;
 import uk.co.essarsoftware.par.cards.Value;
 import uk.co.essarsoftware.par.engine.core.app.CardNotInHandException;
-import uk.co.essarsoftware.par.engine.core.app.PlaysService;
 import uk.co.essarsoftware.par.engine.core.app.TestCard;
-import uk.co.essarsoftware.par.engine.core.app.players.PlayersService;
-import uk.co.essarsoftware.par.engine.core.events.EngineEventQueue;
-import uk.co.essarsoftware.par.game.Player;
+import uk.co.essarsoftware.par.engine.core.app.players.PlayersServiceImpl;
+import uk.co.essarsoftware.par.engine.core.app.plays.PlaysServiceImpl;
+import uk.co.essarsoftware.par.engine.events.EngineEventQueue;
+import uk.co.essarsoftware.par.engine.players.Player;
 
 @ExtendWith(SpringExtension.class)
 public class ActionsServiceTests
@@ -30,9 +30,9 @@ public class ActionsServiceTests
     @MockBean
     private EngineEventQueue eventQueue;
     @MockBean
-    private PlayersService players;
+    private PlayersServiceImpl players;
     @MockBean
-    private PlaysService plays;
+    private PlaysServiceImpl plays;
     @MockBean
     private DrawPile drawPile;
     @MockBean
@@ -67,7 +67,7 @@ public class ActionsServiceTests
         // Set up mock
         when(players.getCurrentPlayer()).thenReturn(playerWithHand(card));
 
-        Card resolvedCard = svc.resolveCards(card)[0];
+        Card resolvedCard = svc.resolveCards(players.getCurrentPlayer(), card)[0];
         assertEquals(card.getSuit(), resolvedCard.getSuit(), "Resolved card suit should match input");
         assertEquals(card.getValue(), resolvedCard.getValue(), "Resolved card value should match input");
 
@@ -83,7 +83,7 @@ public class ActionsServiceTests
         // Set up mock
         when(players.getCurrentPlayer()).thenReturn(playerWithHand(cards));
 
-        Card[] resolvedCards = svc.resolveCards(cards);
+        Card[] resolvedCards = svc.resolveCards(players.getCurrentPlayer(), cards);
         assertEquals(cards.length, resolvedCards.length, "Length of cards and resolveCards should match");
         
     }
@@ -98,7 +98,7 @@ public class ActionsServiceTests
         // Set up mock
         when(players.getCurrentPlayer()).thenReturn(playerWithHand(handCards));
 
-        Card[] resolvedCards = svc.resolveCards(handCards);
+        Card[] resolvedCards = svc.resolveCards(players.getCurrentPlayer(), handCards);
         assertEquals(handCards.length, resolvedCards.length, "Length of cards and resolveCards should match");
 
     }
@@ -112,7 +112,7 @@ public class ActionsServiceTests
 
         Card searchCard = Card.as(Suit.CLUBS, Value.KING);
 
-        assertThrows(CardNotInHandException.class, () -> svc.resolveCards(searchCard), "Missing card should throw exception");
+        assertThrows(CardNotInHandException.class, () -> svc.resolveCards(players.getCurrentPlayer(), searchCard), "Missing card should throw exception");
 
     }
 
@@ -128,7 +128,7 @@ public class ActionsServiceTests
             Card.as(Suit.CLUBS, Value.ACE)
         };
 
-        assertThrows(CardNotInHandException.class, () -> svc.resolveCards(searchCards), "Duplicate card should throw exception");
+        assertThrows(CardNotInHandException.class, () -> svc.resolveCards(players.getCurrentPlayer(), searchCards), "Duplicate card should throw exception");
 
     }
     

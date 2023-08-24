@@ -5,6 +5,8 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 
+import uk.co.essarsoftware.par.engine.actions.Action;
+
 public class ActionResponse
 {
 
@@ -17,9 +19,9 @@ public class ActionResponse
 
         this.action = action;
 
-        // Populate from request object
-        //actionSequence = request.getActionSequence();
-        //actionType = request.getActionType();
+        // Initialise from action object
+        actionSequence = action.getActionSequence();
+        //actionType = action.getActionType();
      
     }
 

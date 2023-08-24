@@ -9,10 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import reactor.core.publisher.Mono;
-import uk.co.essarsoftware.par.engine.core.app.actions.Action.DiscardAction;
-import uk.co.essarsoftware.par.engine.core.app.actions.Action.PickupDiscardAction;
-import uk.co.essarsoftware.par.engine.core.app.actions.Action.PickupDrawAction;
-import uk.co.essarsoftware.par.engine.core.app.actions.Action.PlayCardsAction;
 
 @RestController
 @RequestMapping(consumes = "application/json", produces = "application/json")
@@ -20,12 +16,14 @@ public class ActionsController
 {
     private static final Logger _LOG = LoggerFactory.getLogger(ActionsController.class);
 
+    private final ActionFactory actionFactory;
     private final ActionsService actions;
 
     @Autowired
-    public ActionsController(final ActionsService actions) {
+    public ActionsController(final ActionsService actions, final ActionFactory actionFactory) {
 
         this.actions = actions;
+        this.actionFactory = actionFactory;
 
     }
 
@@ -43,8 +41,9 @@ public class ActionsController
 
         return Mono.just(request)
             //.filter(actions::validateRequest)
-            .map(DiscardAction::new)
-            .map(a -> actions.runAction(actions::discard, a))
+            .map(actionFactory::createDiscardAction)
+            .map(actions::discard)
+            .map(actions::createActionResponse)
             .onErrorResume(ActionsController::handleEngineException);
             
     }
@@ -54,8 +53,9 @@ public class ActionsController
 
         return Mono.just(request)
             //.filter(ActionsService::validateRequest)
-            .map(PickupDiscardAction::new)
-            .map(a -> actions.runAction(actions::pickupDiscard, a))
+            .map(actionFactory::createPickupDiscardAction)
+            .map(actions::pickupDiscard)
+            .map(actions::createActionResponse)
             .onErrorResume(ActionsController::handleEngineException);
 
     }
@@ -65,8 +65,9 @@ public class ActionsController
 
         return Mono.just(request)
             //.filter(ActionsService::validateRequest)
-            .map(PickupDrawAction::new)
-            .map(a -> actions.runAction(actions::pickupDraw, a))
+            .map(actionFactory::createPickupDrawAction)
+            .map(actions::pickupDraw)
+            .map(actions::createActionResponse)
             .onErrorResume(ActionsController::handleEngineException);
 
     }
@@ -76,8 +77,9 @@ public class ActionsController
 
         return Mono.just(request)
             //.filter(ActionsService::validateRequest)
-            .map(PlayCardsAction::new)
-            .map(a -> actions.runAction(actions::playCards, a))
+            .map(actionFactory::createPlayCardsAction)
+            .map(actions::playCards)
+            .map(actions::createActionResponse)
             .onErrorResume(ActionsController::handleEngineException);
 
     }

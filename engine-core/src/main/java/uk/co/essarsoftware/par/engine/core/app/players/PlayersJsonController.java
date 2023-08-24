@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import reactor.core.publisher.Mono;
-import uk.co.essarsoftware.par.game.Game;
+import uk.co.essarsoftware.par.engine.game.Game;
 
 @RestController
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -26,7 +26,7 @@ public class PlayersJsonController
     @Autowired Game game;
 
     @Autowired
-    private PlayersService playersSvc;
+    private PlayersServiceImpl playersSvc;
 
 
     private static void logException(Throwable e) {

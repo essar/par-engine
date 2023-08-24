@@ -2,7 +2,7 @@ package uk.co.essarsoftware.par.engine.core.app.players;
 
 import java.util.stream.Stream;
 
-import uk.co.essarsoftware.par.game.Player;
+import uk.co.essarsoftware.par.engine.players.Player;
 
 public class GetPlayersResponse
 {

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 
 import uk.co.essarsoftware.par.cards.Card;
 import uk.co.essarsoftware.par.engine.core.app.CardEncoder;
-import uk.co.essarsoftware.par.game.Player;
+import uk.co.essarsoftware.par.engine.players.Player;
 
 public class GetPlayerHandResponse
 {

@@ -2,6 +2,7 @@ package uk.co.essarsoftware.par.engine.core.app.actions;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonGetter;
@@ -10,6 +11,7 @@ public class ActionRequest
 {
 
     private final Map<String, Object> params = new HashMap<>();
+    private final String requestID = UUID.randomUUID().toString();
     private ActionType actionType;
     private Integer actionSequence;
     private String gameID, playerID;
@@ -59,6 +61,13 @@ public class ActionRequest
     public String getPlayerID() {
 
         return playerID;
+
+    }
+
+    @JsonGetter("request_id")
+    public String getRequestID() {
+
+        return requestID;
 
     }
 

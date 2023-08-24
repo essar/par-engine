@@ -1,7 +1,8 @@
 package uk.co.essarsoftware.par.engine.core.events;
 
-import uk.co.essarsoftware.par.game.Player;
-import uk.co.essarsoftware.par.game.PlayerState;
+import uk.co.essarsoftware.par.engine.events.EngineEvent;
+import uk.co.essarsoftware.par.engine.players.Player;
+import uk.co.essarsoftware.par.engine.players.PlayerState;
 
 public class PlayerStateChangeEvent extends EngineEvent
 {

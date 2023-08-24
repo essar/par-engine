@@ -1,3 +1,6 @@
+# OS files
+.DS_Store
+
 # Code workspace files
 .vscode/
 *.code-workspace

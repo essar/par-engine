@@ -13,9 +13,10 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import uk.co.essarsoftware.par.cards.Card;
 import uk.co.essarsoftware.par.engine.core.app.players.PlayersJsonController;
-import uk.co.essarsoftware.par.engine.core.events.EngineEvent;
-import uk.co.essarsoftware.par.engine.core.events.EngineEventQueue;
-import uk.co.essarsoftware.par.game.Game;
+import uk.co.essarsoftware.par.engine.events.EngineEvent;
+import uk.co.essarsoftware.par.engine.events.EngineEventQueue;
+import uk.co.essarsoftware.par.engine.game.Game;
+import uk.co.essarsoftware.par.engine.players.PlayerList;
 
 @RestController
 public class GameController
@@ -30,8 +31,10 @@ public class GameController
 
     @Autowired Game game;
 
+    @Autowired PlayerList players;
+
     @Autowired
-    private GameService gameSvc;
+    private GameServiceImpl gameSvc;
 
 
     private static void logException(Throwable e) {
@@ -43,8 +46,7 @@ public class GameController
     @GetMapping(path = "/game", produces = "application/json")
     public Mono<GetGameResponse> getGame() {
 
-        return Mono.just(game)
-            .map(GetGameResponse::new)
+        return Mono.just(new GetGameResponse(game, players))
             .onErrorResume(e -> {
                 logException(e);
                 return Mono.error(e);
@@ -55,7 +57,7 @@ public class GameController
     @GetMapping(path = "/game/events", produces = {"text/event-stream", "application/stream+json", "application/x-ndjson"})
     public Flux<String> streamEvents() throws InterruptedException {
 
-        return eventQueue.getEvents().log().map(EngineEvent::toString);
+        return Flux.fromStream(eventQueue.getEventStream()).log().map(EngineEvent::toString);
             //.merge(Flux.interval(Duration.ofSeconds(10)).log().map(l -> Long.toString(l)));
 
     }

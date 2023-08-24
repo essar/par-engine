@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 
-import uk.co.essarsoftware.par.game.Player;
+import uk.co.essarsoftware.par.engine.players.Player;
 
 @ResponseStatus(code = HttpStatus.CREATED)
 public class CreatePlayerResponse

@@ -1,9 +1,6 @@
 package uk.co.essarsoftware.par.engine.core.app;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +11,8 @@ import uk.co.essarsoftware.par.cards.DiscardPile;
 import uk.co.essarsoftware.par.cards.DrawPile;
 import uk.co.essarsoftware.par.cards.Hand;
 import uk.co.essarsoftware.par.cards.Pack;
-import uk.co.essarsoftware.par.engine.core.app.players.PlayersService;
-import uk.co.essarsoftware.par.game.Player;
+import uk.co.essarsoftware.par.engine.players.Player;
+import uk.co.essarsoftware.par.engine.players.PlayersService;
 
 @Service
 public class CardsService
@@ -43,7 +40,7 @@ public class CardsService
         for (int i = 0; i < HAND_SIZE; i ++) {
 
             players.getPlayersStream()
-            .forEach(p -> p.getHand().addCard(drawPile.pickup()));
+                .forEach(p -> p.getHand().addCard(drawPile.pickup()));
 
         }
         // Flip the top draw card to discard pile

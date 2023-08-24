@@ -18,6 +18,36 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-webflux</artifactId>
     </dependency>
+    <dependency>
+      <groupId>uk.co.essarsoftware.par</groupId>
+      <artifactId>actions</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>uk.co.essarsoftware.par</groupId>
+      <artifactId>cards</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>uk.co.essarsoftware.par</groupId>
+      <artifactId>game</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>uk.co.essarsoftware.par</groupId>
+      <artifactId>players</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>uk.co.essarsoftware.par</groupId>
+      <artifactId>table</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>uk.co.essarsoftware.par</groupId>
+      <artifactId>engine-events</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
 
     <!-- Test dependencies -->
     <dependency>
@@ -50,10 +80,10 @@
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
           </plugin>
-          <plugin>
+          <!-- <plugin>
             <groupId>org.pitest</groupId>
             <artifactId>pitest-maven</artifactId>
-          </plugin>
+          </plugin> -->
         </plugins>
       </build>
     </profile>

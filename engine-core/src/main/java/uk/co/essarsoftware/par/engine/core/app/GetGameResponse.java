@@ -3,25 +3,28 @@ package uk.co.essarsoftware.par.engine.core.app;
 import com.fasterxml.jackson.annotation.JsonGetter;
 
 import uk.co.essarsoftware.par.engine.core.app.players.PlayerStubResponse;
-import uk.co.essarsoftware.par.game.Game;
-import uk.co.essarsoftware.par.game.Player;
-import uk.co.essarsoftware.par.game.Round;
+import uk.co.essarsoftware.par.engine.game.Game;
+import uk.co.essarsoftware.par.engine.game.Round;
+import uk.co.essarsoftware.par.engine.players.Player;
+import uk.co.essarsoftware.par.engine.players.PlayerList;
 
 public class GetGameResponse
 {
 
     private final Game game;
+    private final PlayerList players;
 
-    public GetGameResponse(Game game) {
+    public GetGameResponse(Game game, PlayerList players) {
 
         this.game = game;
+        this.players = players;
 
     }
 
     @JsonGetter("current_player")
     public PlayerStubResponse getCurrentPlayer() {
 
-        Player currentPlayer = game.getCurrentPlayer();
+        Player currentPlayer = players.getCurrentPlayer();
         return new PlayerStubResponse(currentPlayer);
 
     }
@@ -29,7 +32,7 @@ public class GetGameResponse
     @JsonGetter("dealer_id")
     public String getDealer() {
 
-        return game.getDealer() == null ? null : game.getDealer().getPlayerID();
+        return players.getDealer() == null ? null : players.getDealer().getPlayerID();
         
     }
 
@@ -50,7 +53,7 @@ public class GetGameResponse
     @JsonGetter("player_count")
     public Integer getPlayerCount() {
 
-        return game.getPlayerCount();
+        return players.size();
         
     }
 
