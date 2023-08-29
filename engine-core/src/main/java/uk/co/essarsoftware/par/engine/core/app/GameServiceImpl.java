@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import uk.co.essarsoftware.par.engine.players.PlayersService;
-import uk.co.essarsoftware.par.engine.plays.PlaySet;
+import uk.co.essarsoftware.par.engine.plays.PlaysService;
 import uk.co.essarsoftware.par.engine.events.EngineEventQueue;
 import uk.co.essarsoftware.par.engine.core.events.RoundStartedEvent;
 import uk.co.essarsoftware.par.engine.players.PlayerState;
@@ -23,11 +23,11 @@ public class GameServiceImpl
     private final CardsService cards;
     private final EngineEventQueue eventQueue;
     private final Game game;
-    private final PlaySet plays;
+    private final PlaysService plays;
     private final PlayersService players;
 
     @Autowired
-    public GameServiceImpl(Game game, EngineEventQueue eventQueue, PlayersService players, PlaySet plays, CardsService cards) {
+    public GameServiceImpl(Game game, EngineEventQueue eventQueue, PlayersService players, PlaysService plays, CardsService cards) {
 
         this.game = game;
         this.eventQueue = eventQueue;
@@ -85,7 +85,7 @@ public class GameServiceImpl
         cards.initPiles();
 
         // Initialize plays
-        plays.initRound(game.getCurrentRound());
+        plays.initPlaysForRound(game.getCurrentRound());
 
         // Deal player hands
         cards.dealHands();

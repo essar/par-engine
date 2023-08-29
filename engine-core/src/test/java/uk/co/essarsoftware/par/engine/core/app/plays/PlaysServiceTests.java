@@ -4,10 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
 import uk.co.essarsoftware.par.cards.Card;
 import uk.co.essarsoftware.par.cards.Play;
 import uk.co.essarsoftware.par.cards.PrialPlay;
@@ -16,15 +20,19 @@ import uk.co.essarsoftware.par.cards.Suit;
 import uk.co.essarsoftware.par.cards.Value;
 import uk.co.essarsoftware.par.engine.core.app.InvalidPlayException;
 import uk.co.essarsoftware.par.engine.players.Player;
+import uk.co.essarsoftware.par.engine.players.PlayerList;
 import uk.co.essarsoftware.par.engine.plays.PlaySet;
 
 
 /**
  * Tests for {@link ActionService}.
- * @author essar
+ * @author @essar
  */
 public class PlaysServiceTests
 {
+
+    private PlaySet plays;
+    private PlayerList players;
 
     private static Card[] invalidPlay() {
         return new Card[] {
@@ -50,11 +58,24 @@ public class PlaysServiceTests
         };
     }
 
+    @BeforeEach
+    public void mockPlays() {
+
+        plays = Mockito.mock(PlaySet.class);
+        
+    }
+
+    @BeforeEach
+    public void mockPlayers() {
+
+        players = Mockito.mock(PlayerList.class);
+
+    }
+
     @Test
     public void testBuildPlayValidPrial() {
 
-        PlaySet plays = new PlaySet();
-        PlaysServiceImpl playsSvc = new PlaysServiceImpl(plays);
+        PlaysServiceImpl playsSvc = new PlaysServiceImpl(plays, players);
 
         Play play = playsSvc.buildPlay(new PrialPlay(), validPrial());
 
@@ -65,8 +86,7 @@ public class PlaysServiceTests
     @Test
     public void testBuildPlayValidRun() {
 
-        PlaySet plays = new PlaySet();
-        PlaysServiceImpl playsSvc = new PlaysServiceImpl(plays);
+        PlaysServiceImpl playsSvc = new PlaysServiceImpl(plays, players);
 
         Play play = playsSvc.buildPlay(new RunPlay(), validRun());
 
@@ -77,8 +97,7 @@ public class PlaysServiceTests
     @Test
     public void testBuildPlayOnExistingPlayReturnsUnchangedPlay() {
     
-        PlaySet plays = new PlaySet();
-        PlaysServiceImpl playsSvc = new PlaysServiceImpl(plays);
+        PlaysServiceImpl playsSvc = new PlaysServiceImpl(plays, players);
 
         Play existingPlay = new PrialPlay();
         existingPlay.addCard(validPrial()[0]);
@@ -92,8 +111,7 @@ public class PlaysServiceTests
     @Test
     public void testBuildPlayInvalidPlayReturnsPlayNotPrialNorRun() {
     
-        PlaySet plays = new PlaySet();
-        PlaysServiceImpl playsSvc = new PlaysServiceImpl(plays);
+        PlaysServiceImpl playsSvc = new PlaysServiceImpl(plays, players);
 
         Play play = playsSvc.buildPlay(new PrialPlay(), invalidPlay());
 
@@ -106,11 +124,10 @@ public class PlaysServiceTests
     public void testBuildPlayForPlayerValidPrial() {
 
         Player player = new Player("test", "Test Player");
-        PlaySet plays = new PlaySet();
-        PlaysServiceImpl playsSvc = new PlaysServiceImpl(plays);
+        PlaysServiceImpl playsSvc = new PlaysServiceImpl(plays, players);
 
-        // Add Play to playset
-        plays.put(player, new Play[] { new PrialPlay() });
+        // Add play to playset
+        when(plays.getAvailablePlays(player)).thenReturn(new Play[] { new PrialPlay() });
 
         Play play = playsSvc.buildPlayForPlayer(player, validPrial());
 
@@ -122,11 +139,10 @@ public class PlaysServiceTests
     public void testBuildPlayForPlayerValidRun() {
 
         Player player = new Player("test", "Test Player");
-        PlaySet plays = new PlaySet();
-        PlaysServiceImpl playsSvc = new PlaysServiceImpl(plays);
+        PlaysServiceImpl playsSvc = new PlaysServiceImpl(plays, players);
 
         // Add Play to playset
-        plays.put(player, new Play[] { new RunPlay() });
+        when(plays.getAvailablePlays(player)).thenReturn(new Play[] { new RunPlay() });
 
         Play play = playsSvc.buildPlayForPlayer(player, validRun());
 
@@ -138,25 +154,10 @@ public class PlaysServiceTests
     public void testBuildPlayForPlayerEmptyPlaysetThrowsException() {
 
         Player player = new Player("test", "Test Player");
-        PlaySet plays = new PlaySet();
-        PlaysServiceImpl playsSvc = new PlaysServiceImpl(plays);
+        PlaysServiceImpl playsSvc = new PlaysServiceImpl(plays, players);
 
         // Add Play to playset
-        plays.put(player, new Play[0]);
-
-        assertThrows(InvalidPlayException.class, () -> playsSvc.buildPlayForPlayer(player, validPrial()), "Using empty playset should throw exception");
-
-    }
-
-    @Test
-    public void testBuildPlayForPlayerUnknownPlayerThrowsException() {
-
-        Player player = new Player("test", "Test Player");
-        PlaySet plays = new PlaySet();
-        PlaysServiceImpl playsSvc = new PlaysServiceImpl(plays);
-
-        // Add Play to playset
-        plays.put(player, new Play[] { new RunPlay() });
+        when(plays.getAvailablePlays(player)).thenReturn(new Play[0]);
 
         assertThrows(InvalidPlayException.class, () -> playsSvc.buildPlayForPlayer(player, validPrial()), "Using empty playset should throw exception");
 
@@ -166,12 +167,8 @@ public class PlaysServiceTests
     public void testBuildPlayForPlayerFewerThanThreeCardsThrowsException() {
 
         Player player = new Player("test", "Test Player");
-        PlaySet plays = new PlaySet();
-        PlaysServiceImpl playsSvc = new PlaysServiceImpl(plays);
+        PlaysServiceImpl playsSvc = new PlaysServiceImpl(plays, players);
         Card[] cards = Arrays.copyOfRange(validPrial(), 0, 2);
-
-        // Add Play to playset
-        plays.put(player, new Play[] { new PrialPlay() });
 
         assertThrows(InvalidPlayException.class, () -> playsSvc.buildPlayForPlayer(player, cards), "Building Play with fewer than three cards should throw exception");
 
@@ -181,8 +178,7 @@ public class PlaysServiceTests
     public void testBuildPlayForPlayerMoreThanThreeCardsThrowsException() {
 
         Player player = new Player("test", "Test Player");
-        PlaySet plays = new PlaySet();
-        PlaysServiceImpl playsSvc = new PlaysServiceImpl(plays);
+        PlaysServiceImpl playsSvc = new PlaysServiceImpl(plays, players);
         Card[] cards = new Card[] {
             validPrial()[0],
             validPrial()[1],
@@ -190,9 +186,6 @@ public class PlaysServiceTests
             Card.as(Suit.CLUBS, Value.FOUR)
         };
         
-        // Add Play to playset
-        plays.put(player, new Play[] { new PrialPlay() });
-
         assertThrows(InvalidPlayException.class, () -> playsSvc.buildPlayForPlayer(player, cards), "Building Play with more than three cards should throw exception");
 
     }
@@ -201,11 +194,10 @@ public class PlaysServiceTests
     public void testBuildPlayForInvalidPlayThrowsException() {
 
         Player player = new Player("test", "Test Player");
-        PlaySet plays = new PlaySet();
-        PlaysServiceImpl playsSvc = new PlaysServiceImpl(plays);
+        PlaysServiceImpl playsSvc = new PlaysServiceImpl(plays, players);
         
         // Add Play to playset
-        plays.put(player, new Play[] { new PrialPlay() });
+        when(plays.getAvailablePlays(player)).thenReturn(new Play[] { new PrialPlay() });
         
         Card[] cards = new Card[] {
             Card.as(Suit.CLUBS, Value.ACE),
@@ -220,7 +212,7 @@ public class PlaysServiceTests
     @Test
     public void testIsValidPlayValidPrial() {
 
-        PlaysServiceImpl playsSvc = new PlaysServiceImpl(new PlaySet());
+        PlaysServiceImpl playsSvc = new PlaysServiceImpl(plays, players);
 
         // Create play and add cards
         Play play = new PrialPlay();
@@ -233,7 +225,7 @@ public class PlaysServiceTests
     @Test
     public void testIsValidPlayValidRun() {
 
-        PlaysServiceImpl playsSvc = new PlaysServiceImpl(new PlaySet());
+        PlaysServiceImpl playsSvc = new PlaysServiceImpl(plays, players);
 
         // Create play and add cards
         Play play = new RunPlay();
@@ -246,7 +238,7 @@ public class PlaysServiceTests
     @Test
     public void testIsValidNullIsNotValidPlay() {
 
-        PlaysServiceImpl playsSvc = new PlaysServiceImpl(new PlaySet());
+        PlaysServiceImpl playsSvc = new PlaysServiceImpl(plays, players);
 
         assertFalse(playsSvc.isValidPlay(null), "Null object is not a valid Play");
         
@@ -255,7 +247,7 @@ public class PlaysServiceTests
     @Test
     public void testIsValidPlayEmptyPlayIsNotValidPlay() {
 
-        PlaysServiceImpl playsSvc = new PlaysServiceImpl(new PlaySet());
+        PlaysServiceImpl playsSvc = new PlaysServiceImpl(plays, players);
 
         // Create play and add cards
         Play play = new PrialPlay();
