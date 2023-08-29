@@ -19,7 +19,6 @@ import uk.co.essarsoftware.par.engine.actions.PickupDrawActionHandler.PickupDraw
 import uk.co.essarsoftware.par.engine.actions.PlayCardsActionHandler.PlayCardsAction;
 import uk.co.essarsoftware.par.engine.core.app.CardEncoder;
 import uk.co.essarsoftware.par.engine.core.app.CardNotInHandException;
-import uk.co.essarsoftware.par.engine.core.app.plays.PlaysServiceImpl;
 import uk.co.essarsoftware.par.engine.core.events.NextPlayerEvent;
 import uk.co.essarsoftware.par.engine.core.events.PlayerDiscardEvent;
 import uk.co.essarsoftware.par.engine.core.events.PlayerPickupDiscardEvent;
@@ -31,6 +30,7 @@ import uk.co.essarsoftware.par.engine.events.EngineEventQueue;
 import uk.co.essarsoftware.par.engine.players.Player;
 import uk.co.essarsoftware.par.engine.players.PlayerState;
 import uk.co.essarsoftware.par.engine.players.PlayersService;
+import uk.co.essarsoftware.par.engine.plays.PlaysService;
 
 @Service
 public class ActionsService
@@ -38,30 +38,18 @@ public class ActionsService
 
     private static final Logger _LOGGER = LoggerFactory.getLogger(ActionsService.class);
 
+    private final ActionSequencer actionSequencer;
     private final EngineEventQueue eventQueue;
-    private final PlaysServiceImpl plays;
+    private final PlaysService plays;
     private final PlayersService players;
 
-    private int sequenceNo = 1;
+    public ActionsService(final EngineEventQueue eventQueue, final PlayersService players, final PlaysService playsSvc, final ActionSequencer actionSequencer, final DrawPile drawPile, final DiscardPile discardPile) {
 
-    public ActionsService(final EngineEventQueue eventQueue, final PlayersService players, final PlaysServiceImpl playsSvc, final DrawPile drawPile, final DiscardPile discardPile) {
-
+        this.actionSequencer = actionSequencer;
         this.eventQueue = eventQueue;
         this.players = players;
         this.plays = playsSvc;
 
-    }
-
-    private boolean validateSequence(Action<?> action) {
-
-        _LOGGER.debug("Validating sequence number");
-        if (action.getActionSequence() == sequenceNo) {
-
-            return true;    
-
-        }
-        throw new ActionOutOfSequenceException(action.getActionSequence(), sequenceNo);
-    
     }
 
     Card resolveCard(Player player, Card card) {
@@ -100,12 +88,6 @@ public class ActionsService
 
         return resolvedCards;
         
-    }
-
-    public int getSequence() {
-
-        return sequenceNo;
-
     }
 
     @PostConstruct
@@ -162,10 +144,10 @@ public class ActionsService
         ActionResponse response = new ActionResponse(action);
 
         // Increment sequence if action is successful
-        sequenceNo ++;
+        int nextSequenceNo = actionSequencer.nextSequence();
 
         // Inject next sequence number into response
-        response.setNextActionSequence(sequenceNo);
+        response.setNextActionSequence(nextSequenceNo);
 
         return response;
         
@@ -174,7 +156,7 @@ public class ActionsService
     public DiscardAction discard(DiscardAction action) {
 
         // Validate action
-        validateSequence(action);
+        actionSequencer.validateSequence(action);
 
         // Check specified player is current player and in correct state
         Player currentPlayer = players.validateIsCurrentPlayerAndInState(action.getPlayerID(), PlayerState.PLAYING);
@@ -199,7 +181,7 @@ public class ActionsService
     public PickupDrawAction pickupDraw(PickupDrawAction action) {
 
         // Validate action
-        validateSequence(action);
+        actionSequencer.validateSequence(action);
 
         // Check specified player is current player and in correct state
         Player currentPlayer = players.validateIsCurrentPlayerAndInState(action.getPlayerID(), PlayerState.PICKUP);
@@ -221,7 +203,7 @@ public class ActionsService
     public PickupDiscardAction pickupDiscard(PickupDiscardAction action) {
 
         // Validate action
-        validateSequence(action);
+        actionSequencer.validateSequence(action);
 
         // Check specified player is current player and in correct state
         Player currentPlayer = players.validateIsCurrentPlayerAndInState(action.getPlayerID(), PlayerState.PICKUP);
@@ -243,7 +225,7 @@ public class ActionsService
     public PlayCardsAction playCards(final PlayCardsAction action) {
 
         // Validate action
-        validateSequence(action);
+        actionSequencer.validateSequence(action);
 
         // Check specified player is current player and in correct state
         Player currentPlayer = players.validateIsCurrentPlayerAndInState(action.getPlayerID(), PlayerState.PLAYING);

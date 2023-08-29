@@ -34,6 +34,8 @@ public class ActionsServiceTests
     @MockBean
     private PlaysServiceImpl plays;
     @MockBean
+    private ActionSequencer actionSequencer;
+    @MockBean
     private DrawPile drawPile;
     @MockBean
     private DiscardPile discardPile;
@@ -55,7 +57,7 @@ public class ActionsServiceTests
     @BeforeEach
     public void setUpService() {
 
-        svc = new ActionsService(eventQueue, players, plays, drawPile, discardPile);
+        svc = new ActionsService(eventQueue, players, plays, actionSequencer, drawPile, discardPile);
 
     }
 
