@@ -24,7 +24,7 @@ public class PenaltyCard
     }
 
     /**
-     * Clears the existing penalty card.
+     * Clear the existing penalty card.
      */
     public void clearPenaltyCard() {
 
@@ -33,7 +33,7 @@ public class PenaltyCard
     }
 
     /**
-     * Gets the current penalty card.
+     * Get the current penalty card.
      * @return the currently held penalty card, or {@code null} if no penalty card is held.
      */
     public Card getPenaltyCard() {
@@ -43,7 +43,7 @@ public class PenaltyCard
     }
 
     /**
-     * Indicates if a penalty card is currently held.
+     * Indicate if a penalty card is currently held.
      * @return {@code true} if a penalty card is currently being held.
      */
     public boolean hasPenaltyCard() {
@@ -53,7 +53,7 @@ public class PenaltyCard
     }
 
     /**
-     * Sets the penalty card.
+     * Set the penalty card.
      * @param penaltyCard the Card to set as the penalty card.
      * @throws IllegalArgumentException if {@code card} is {@code null}; use {@link #clearPenaltyCard()} instead.
      * @throws IllegalStateException if a penalty card is already being held.

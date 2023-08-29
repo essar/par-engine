@@ -8,7 +8,7 @@ public class RunPlay extends Play
 {
 
     /**
-     * Compares two Cards held in this Run for sorting.
+     * Compare two Cards held in this Run for sorting.
      * @see java.util.Comparator#compare(Object, Object)
      */
     @Override
@@ -25,7 +25,7 @@ public class RunPlay extends Play
     }
     
     /**
-     * Gets the allowable cards for this Run. If no cards are currently in the run, all cards are allowed.
+     * Get the allowable cards for this Run. If no cards are currently in the run, all cards are allowed.
      * Otherwise allowable cards are of the same suit as existing cards and must have sequential values from
      * the head and tail of the run.
      * @return an array containing the allowed Cards.

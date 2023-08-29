@@ -13,7 +13,7 @@ class BoundJoker implements Joker
     private final UUID cardID;
 
     /**
-     * Instantiates a new BoundJoker class that is bound to the specified card.
+     * Instantiate a new BoundJoker class that is bound to the specified card.
      * @param boundCard a card to bind this joker to.
      * @throws IllegalArgumentException if {@code boundCard} is {@code null} or a Joker.
      */
@@ -35,7 +35,7 @@ class BoundJoker implements Joker
     }
 
     /**
-     * Gets the current bound card.
+     * Get the current bound card.
      * @return a Card.
      */
     protected Card getBoundCard() {
@@ -45,7 +45,7 @@ class BoundJoker implements Joker
     }
 
     /**
-     * Gets the card ID.
+     * Get the card ID.
      * @return a globally unique identifier for this Card instance.
      */
     protected String getCardID() {
@@ -66,7 +66,7 @@ class BoundJoker implements Joker
     }
 
     /**
-     * Tests if this BoundJoker is equal to another object.
+     * Test if this BoundJoker is equal to another object.
      * A BoundJoker is equal to a {@link Card} if the card is equal to the underlying bound card.
      * @see Object#equals(Object)
      */
@@ -106,7 +106,7 @@ class BoundJoker implements Joker
     }
 
     /**
-     * Returns the suit of the underlying bound card.
+     * Return the suit of the underlying bound card.
      * @return the card Suit.
      * @see Joker#getSuit()
      */
@@ -118,7 +118,7 @@ class BoundJoker implements Joker
     }
 
     /**
-     * Returns the value of the underlying bound card.
+     * Return the value of the underlying bound card.
      * @return the card face value.
      * @see Joker#getValue()
      */
@@ -135,7 +135,7 @@ class BoundJoker implements Joker
     @Override
     public String toString() {
 
-        return String.format("BoundJoker[ID: %s; BoundCard: %s]", cardID, boundCard);
+        return String.format("BoundJoker@%s[boundCard=%s]", cardID, boundCard);
 
     }
 }

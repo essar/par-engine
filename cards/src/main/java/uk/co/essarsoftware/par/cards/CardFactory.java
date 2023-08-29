@@ -17,7 +17,7 @@ class CardFactory
     private static final Logger _LOGGER = LoggerFactory.getLogger(Hand.class);
 
     /**
-     * Creates a new Stream containing all standard cards.
+     * Create a new Stream containing all standard cards.
      * @return a Stream containing the standard 52 cards.
      */
     private static Stream<Card> cardStream() {
@@ -29,7 +29,7 @@ class CardFactory
     }
     
     /**
-     * Generates a new card of given suit and value.
+     * Generate a new card of given suit and value.
      * @param suit the card suit.
      * @param value the card face value.
      * @return a new Card implementation.
@@ -41,7 +41,7 @@ class CardFactory
     }
 
     /**
-     * Gets all cards.
+     * Get all cards.
      * @return an array containing all cards.
      */
     static Card[] allCards() {
@@ -54,7 +54,7 @@ class CardFactory
     }
 
     /**
-     * Gets all cards in a given suit.
+     * Get all cards in a given suit.
      * @param suit the card suit.
      * @return an array containing all cards for the specified suit.
      */
@@ -70,7 +70,7 @@ class CardFactory
     }
 
     /**
-     * Gets all cards with a given value.
+     * Get all cards with a given value.
      * @param value the card face value.
      * @return an array containing all cards with the specified value.
      */
@@ -86,7 +86,7 @@ class CardFactory
     }
 
     /**
-     * Gets a card with the previous value to an existing card.
+     * Get a card with the previous value to an existing card.
      * @param card a card.
      * @return a new Card with the same suit but previous value to the specified card, or {@code null} if the specified card has no previous card.
      */
@@ -106,7 +106,7 @@ class CardFactory
     }
 
     /**
-     * Gets a card with the next value to an existing card.
+     * Get a card with the next value to an existing card.
      * @param card a card.
      * @return a new Card with the same suit but next value to the specifed card, or {@code null} if the specified card has no next value.
      */

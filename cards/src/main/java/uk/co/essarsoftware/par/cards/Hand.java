@@ -36,10 +36,10 @@ public class Hand
 
         synchronized (cards) {
 
-            _LOGGER.debug("addCard({})", card);
+            _LOGGER.trace("addCard({})", card);
             if (cards.contains(card)) {
 
-                throw new IllegalArgumentException("Card already in hand");
+                throw new IllegalArgumentException(String.format("Card %s already in hand", CardFormatter.asShortString(card)));
 
             }
             cards.add(card);
@@ -49,7 +49,7 @@ public class Hand
     }
     
     /**
-     * Removes all cards from the Hand.
+     * Remove all cards from the Hand.
      */
     public void clear() {
 
@@ -139,7 +139,7 @@ public class Hand
             Card resolvedCard = findCard(card);
             if (resolvedCard == null) {
 
-                throw new IllegalArgumentException("Card not contained in hand");
+                throw new IllegalArgumentException(String.format("Card %s not contained in hand", CardFormatter.asShortString(card)));
 
             }
             cards.remove(resolvedCard);

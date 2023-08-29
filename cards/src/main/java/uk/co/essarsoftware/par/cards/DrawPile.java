@@ -14,7 +14,7 @@ public class DrawPile extends Pile
 {
 
     /**
-     * Shuffles the DrawPile based on a known seed.
+     * Shuffle the DrawPile based on a known seed.
      * @param seed a long used to seed the shuffle.
      */
     void shuffle(final Long seed) {
@@ -27,7 +27,7 @@ public class DrawPile extends Pile
     }
 
     /**
-     * Adds a Pack of Cards to the DrawPile.
+     * Add a Pack of Cards to the DrawPile.
      * @param pack a Pack of Cards.
      */
     public void addPack(Pack pack) {
@@ -40,7 +40,7 @@ public class DrawPile extends Pile
     }
 
     /**
-     * Shuffles the DrawPile.
+     * Shuffle the DrawPile.
      */
     public void shuffle() {
 

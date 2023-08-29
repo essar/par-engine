@@ -31,7 +31,7 @@ public class DiscardPile extends Pile
     }
 
     /**
-     * Gets the top card in the DiscardPile.
+     * Get the top card in the DiscardPile.
      * @return the top Card in the pile.
      */
     public Card getDiscard() {

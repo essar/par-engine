@@ -6,12 +6,7 @@ package uk.co.essarsoftware.par.cards;
  */
 public enum Suit
 {
-    /** Clubs */
-    CLUBS,
-    /** Diamonds */
-    DIAMONDS,
-    /** Hearts */
-    HEARTS,
-    /** Spades */
-    SPADES
+    /** Suits */
+    CLUBS, DIAMONDS, HEARTS, SPADES;
+
 }

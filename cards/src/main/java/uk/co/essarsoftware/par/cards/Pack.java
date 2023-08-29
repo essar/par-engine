@@ -21,7 +21,7 @@ public class Pack
     private final UUID packID;
 
     /**
-     * Creates a new pack. Cannot be called externally, use {@link #generatePack()} or {@link #generatePackWithJokers()} instead.
+     * Create a new pack. Cannot be called externally, use {@link #generatePack()} or {@link #generatePackWithJokers()} instead.
      */
     private Pack() {
 
@@ -33,7 +33,7 @@ public class Pack
     }
 
     /**
-     * Creates a new Card and adds it to this Pack.
+     * Create a new Card and adds it to this Pack.
      * @param s the card Suit.
      * @param v the card Value.
      */
@@ -45,7 +45,7 @@ public class Pack
     }
 
     /**
-     * Creates a new Joker and adds it to this Pack.
+     * Create a new Joker and adds it to this Pack.
      */
     private void addJoker() {
 
@@ -55,7 +55,7 @@ public class Pack
     }
 
     /**
-     * Adds an entry (card or joker) to this Pack.
+     * Add an entry (card or joker) to this Pack.
      * @param entry the card or joker to add.
      * @throws IllegalArgumentException if an attempt is made to add a card that is not associated with this pack or add duplicate cards to the pack.
      */
@@ -87,7 +87,7 @@ public class Pack
     }
 
     /**
-     * Gets a Stream object containing all the cards in this Pack.
+     * Get a Stream object containing all the cards in this Pack.
      * @return a Stream of Cards.
      */
     Stream<? extends Card> getCardStream() {
@@ -97,7 +97,7 @@ public class Pack
     }
 
     /**
-     * Gets an array containing all the cards in this Pack.
+     * Get an array containing all the cards in this Pack.
      * @return an array of Cards.
      */
     public Card[] getCards() {
@@ -107,7 +107,7 @@ public class Pack
     }
 
     /**
-     * Gets the unique pack ID.
+     * Get the unique pack ID.
      * @return a UUID that is unique for this pack.
      */
     public UUID getPackID() {
@@ -117,7 +117,7 @@ public class Pack
     }
 
     /**
-     * Generates a new Pack containing the standard set of 52 cards.
+     * Generate a new Pack containing the standard set of 52 cards.
      * @return a new Pack of 52 cards.
      */
     public static Pack generatePack() {
@@ -132,7 +132,7 @@ public class Pack
     }
 
     /**
-     * Generates a new pack containing the standard set of 52 cards plus two jokers.
+     * Generate a new pack containing the standard set of 52 cards plus two jokers.
      * @return a new Pack of 54 cards.
      */
     public static Pack generatePackWithJokers() {
@@ -163,7 +163,7 @@ public class Pack
     {
 
         /**
-         * Instantiates a new PackCard with the specified suit and value.
+         * Instantiate a new PackCard with the specified suit and value.
          * @param suit the card suit.
          * @param value the card face value.
          */
@@ -184,7 +184,7 @@ public class Pack
         }
 
         /**
-         * Tests if this PackCard is equal to another object.
+         * Test if this PackCard is equal to another object.
          * @return {@code true} if {@code o} is a PackCard, with a matching pack ID, suit and value; {@code false} otherwise.
          * @see Object#equals(Object)
          */
@@ -202,6 +202,16 @@ public class Pack
             }
             return false;
 
+        }
+
+        /*
+         * @see DefaultCard#toString
+         */
+        @Override
+        public String toString() {
+
+            return String.format("PackCard@%s[packId=%s,suit=%s,value=%s]", getCardID(), packID, getSuit(), getValue());
+            
         }
     }
 
@@ -248,12 +258,12 @@ public class Pack
             // Can only bind to a pack card
             if (! (card instanceof PackCard)) {
 
-                throw new IllegalArgumentException("Must bind to pack card: " + card);
+                throw new IllegalArgumentException("Must bind to pack card");
 
             }
 
             PackBoundJoker boundJoker = new PackBoundJoker(card);
-            _LOGGER.debug("Created bound joker: {}", boundJoker);
+            _LOGGER.debug("[%s] Created bound joker: {}", packID, boundJoker);
             
             return boundJoker;
 

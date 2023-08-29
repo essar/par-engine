@@ -8,7 +8,7 @@ public class PrialPlay extends Play
 {
 
     /**
-     * Compares two Cards held in this Prial for sorting.
+     * Compare two Cards held in this Prial for sorting.
      * @see java.util.Comparator#compare(Object, Object)
      */
     @Override
@@ -20,7 +20,7 @@ public class PrialPlay extends Play
     }
 
     /**
-     * Gets the allowable cards for this Prial. If no cards are currently in the run, all cards are allowed.
+     * Get the allowable cards for this Prial. If no cards are currently in the run, all cards are allowed.
      * Otherwise allowable cards are of the same value as existing cards.
      * @return an array containing the allowed Cards.
      * @see Play#getAllowableCards()

@@ -137,7 +137,7 @@ public class BoundJokerTests
 
         Card card = Card.as(Suit.CLUBS, Value.KING);
         BoundJoker joker = new BoundJoker(card);
-        assertTrue(joker.toString().matches("BoundJoker\\[ID: [a-z0-9\\-]+; BoundCard: DefaultCard\\[ID: [a-z0-9\\-]+; Suit: CLUBS; Value: KING\\]\\]"), "Expected string to match pattern");
+        assertTrue(joker.toString().matches("BoundJoker@[a-z0-9\\-]+\\[boundCard=DefaultCard@[a-z0-9\\-]+\\[suit=CLUBS,value=KING\\]\\]"), "Expected string to match pattern");
     
     }
 }

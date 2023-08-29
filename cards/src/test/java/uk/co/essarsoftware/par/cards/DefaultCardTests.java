@@ -151,7 +151,7 @@ public class DefaultCardTests
     public void testToString() {
 
         Card card = new DefaultCard(Suit.CLUBS, Value.KING);
-        assertTrue(card.toString().matches("DefaultCard\\[ID: [a-z0-9\\-]+; Suit: CLUBS; Value: KING\\]"), "Expected string to match pattern");
+        assertTrue(card.toString().matches("DefaultCard@[a-z0-9\\-]+\\[suit=CLUBS,value=KING\\]"), "Expected string to match pattern");
     
     }
     

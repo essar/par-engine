@@ -15,7 +15,7 @@ class DefaultCard implements Card
     private final Value value;
 
     /**
-     * Instantiates a new DefaultCard with the specified suit and value.
+     * Instantiate a new DefaultCard with the specified suit and value.
      * @param suit the card suit.
      * @param value the card face value.
      */
@@ -28,7 +28,7 @@ class DefaultCard implements Card
     }
 
     /**
-     * Gets the card ID.
+     * Get the card ID.
      * @return a globally unique identifier for this Card instance.
      */
     public String getCardID() {
@@ -58,7 +58,7 @@ class DefaultCard implements Card
     }
 
     /**
-     * Tests if this Card is equal to another Card. Cards are deemed equal if they have the same suits and values.
+     * Test if this Card is equal to another Card. Cards are deemed equal if they have the same suits and values.
      * @see Object#equals(Object)
      */
     @Override
@@ -93,7 +93,7 @@ class DefaultCard implements Card
     @Override
     public String toString() {
 
-        return String.format("DefaultCard[ID: %s; Suit: %s; Value: %s]", cardID, suit, value);
+        return String.format("DefaultCard@%s[suit=%s,value=%s]", cardID, suit, value);
 
     }
 }

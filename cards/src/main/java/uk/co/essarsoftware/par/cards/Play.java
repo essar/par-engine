@@ -27,25 +27,25 @@ public abstract class Play implements Comparator<Card>
     }
 
     /**
-     * Gets an array that indicates the valid cards able to be played in this play.
+     * Get an array that indicates the valid cards able to be played in this play.
      * @return an array containing Cards that can be added to this play.
      */
     public abstract Card[] getAllowableCards();
 
     /**
-     * Tests if this is a valid Prial.
+     * Test if this is a valid Prial.
      * @return {@code true} if this play contains at least 3 cards of a matching Value; {@code false} otherwise.
      */
     public abstract boolean isPrial();
 
     /**
-     * Tests if this is a valid Run.
+     * Test if this is a valid Run.
      * @return {@code true} if this play contains at least 3 cards of a matching Suit and sequential Values; {@code false} otherwise.
      */
     public abstract boolean isRun();
 
     /**
-     * Adds a card to this play.
+     * Add a card to this play.
      * @param card the Card to add.
      * @throws IllegalArgumentException if {@code card} cannot be added to the Play.
      */
@@ -79,7 +79,7 @@ public abstract class Play implements Comparator<Card>
     }
 
     /**
-     * Gets all the cards currently in this Play.
+     * Get all the cards currently in this Play.
      * @return an array containing the Cards.
      */
     public Card[] getCards() {
@@ -89,7 +89,7 @@ public abstract class Play implements Comparator<Card>
     }
 
     /**
-     * Resets the current Play and removes all cards.
+     * Reset the current Play and removes all cards.
      */
     public void reset() {
 
@@ -104,7 +104,7 @@ public abstract class Play implements Comparator<Card>
     }
 
     /**
-     * Counts the number of cards in the Play.
+     * Count the number of cards in the Play.
      * @return the number of cards in the Play.
      */
     public int size() {
