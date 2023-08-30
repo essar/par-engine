@@ -6,4 +6,4 @@ VOLUME /app
 WORKDIR /app
 
 # Default is to run verify lifecycle with coverage profile
-CMD [ "mvn", "clean", "verify", "-P coverage" ]
+CMD [ "mvn", "clean", "verify", "-P coverage", "-Dstyle.color=always" ]
