@@ -98,60 +98,8 @@
               <configuration>
                 <haltOnFailure>false</haltOnFailure>
                 <rules>
-                  <!--<rule>
+                  <rule>
                     <element>BUNDLE</element>
-                    <limits>
-                      <limit>
-                        <counter>COMPLEXITY</counter>
-                        <value>COVEREDRATIO</value>
-                        <minimum>0.60</minimum>
-                      </limit>
-                    </limits>
-                  </rule>-->
-                  <rule>
-                    <element>PACKAGE</element>
-                    <includes>
-                      <include>uk.co.essarsoftware.par.cards</include>
-                    </includes>
-                    <limits>
-                      <limit>
-                        <counter>COMPLEXITY</counter>
-                        <value>COVEREDRATIO</value>
-                        <minimum>0.60</minimum>
-                      </limit>
-                    </limits>
-                  </rule>
-                  <rule>
-                    <element>PACKAGE</element>
-                    <includes>
-                      <include>uk.co.essarsoftware.par.engine.actions</include>
-                    </includes>
-                    <limits>
-                      <limit>
-                        <counter>COMPLEXITY</counter>
-                        <value>COVEREDRATIO</value>
-                        <minimum>0.60</minimum>
-                      </limit>
-                    </limits>
-                  </rule>
-                  <rule>
-                    <element>PACKAGE</element>
-                    <includes>
-                      <include>uk.co.essarsoftware.par.engine.game</include>
-                    </includes>
-                    <limits>
-                      <limit>
-                        <counter>COMPLEXITY</counter>
-                        <value>COVEREDRATIO</value>
-                        <minimum>0.60</minimum>
-                      </limit>
-                    </limits>
-                  </rule>
-                  <rule>
-                    <element>PACKAGE</element>
-                    <includes>
-                      <include>uk.co.essarsoftware.par.engine.players</include>
-                    </includes>
                     <limits>
                       <limit>
                         <counter>COMPLEXITY</counter>
@@ -186,15 +134,11 @@
               <configuration>
                 <targetClasses>
                   <param>uk.co.essarsoftware.par.cards.*</param>
-                  <param>uk.co.essarsoftware.par.engine.actions.*</param>
-                  <param>uk.co.essarsoftware.par.engine.game.*</param>
-                  <param>uk.co.essarsoftware.par.engine.players.*</param>
+                  <param>uk.co.essarsoftware.par.engine.*</param>
                 </targetClasses>
                 <targetTests>
                   <param>uk.co.essarsoftware.par.cards.*</param>
-                  <param>uk.co.essarsoftware.par.engine.actions.*</param>
-                  <param>uk.co.essarsoftware.par.engine.game.*</param>
-                  <param>uk.co.essarsoftware.par.engine.players.*</param>
+                  <param>uk.co.essarsoftware.par.engine.*</param>
                 </targetTests>
                 <reportsDirectory>target/site/pitest</reportsDirectory>
               </configuration>
