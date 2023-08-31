@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests for {@link Pack}.
- * @author essar
+ * @author @essar
  */
 public class PackTests
 {
@@ -129,6 +129,15 @@ public class PackTests
         Card card = getCardFrom(pack);
         Card card2 = TestCardFactory.card(card.getSuit(), card.getValue());
         assertFalse(card.equals(card2), "Card should not be equal non-pack card");
+
+    }
+
+    @Test
+    public void testPackCardToStringReturnsExpectedString() {
+
+        Pack pack = Pack.generatePack();
+        Card card = findCardFrom(pack, Suit.CLUBS, Value.ACE);
+        assertTrue(card.toString().matches("PackCard@[a-z0-9\\-]+\\[packId=[a-z0-9\\-]+,suit=CLUBS,value=ACE\\]"), "Expected string to match pattern");
 
     }
 
