@@ -12,6 +12,11 @@ import uk.co.essarsoftware.par.cards.Play;
 import uk.co.essarsoftware.par.engine.players.Player;
 import uk.co.essarsoftware.par.engine.plays.PlaysService;
 
+/**
+ * Action handler class for {@link PlayCardsAction}.
+ * Takes three cards from the player's hand and tries to build them into a Play on the table.
+ * @author @essar
+ */
 @Component
 public class PlayCardsActionHandler implements ActionHandler
 {
@@ -20,19 +25,34 @@ public class PlayCardsActionHandler implements ActionHandler
 
     private final PlaysService plays;
 
+    /**
+     * Instantiate a new PlayCardsActionHandler.
+     * @param plays Service exposing play methods on the game.
+     */
     @Autowired
-    public PlayCardsActionHandler(PlaysService plays) {
+    public PlayCardsActionHandler(final PlaysService plays) {
 
         this.plays = plays;
         
     }
 
+    /**
+     * Create a new {@link PlayCardsAction}.
+     * @param requestID parent request ID.
+     * @param actionSequence current action sequence number.
+     * @param playerID ownering player ID.
+     * @return a new PlayCardsAction object.
+     */
     public PlayCardsAction newAction(String requestID, Integer actionSequence, String playerID) {
 
         return new PlayCardsAction(requestID, actionSequence, playerID);
 
     }
 
+    /**
+     * {@link Action} subclass that takes three cards from the player's hand and tries to build them into a Play on the table.
+     * @author @essar
+     */
     public class PlayCardsAction extends Action<Play>
     {
         private PlayCardsAction(String requestID, Integer actionSequence, String playerID) {
@@ -47,12 +67,15 @@ public class PlayCardsActionHandler implements ActionHandler
 
         }
 
-        public Card[] getJokerBindings() {
+        /* public Card[] getJokerBindings() {
 
             return getParameter("joker_bindings", Card[].class);
             
-        }
+        } */
 
+        /**
+         * @see Action#getResult()
+         */
         @Override
         public Play getResult() {
             
@@ -60,7 +83,23 @@ public class PlayCardsActionHandler implements ActionHandler
             
         }
 
+        /**
+         * Attempt to make a play from the cards.
+         * @param currentPlayer the player to perform the pickup.
+         * @param cards an array of {@link Card}s to try and build into a Play.
+         * @return the Play created.
+         */
         public Play playCards(final Player currentPlayer, final Card[] cards) {
+
+            if (currentPlayer == null) {
+
+                throw new IllegalArgumentException("Current player cannot be null");
+            }
+
+            if (cards == null) {
+
+                throw new IllegalArgumentException("Card array cannot be null");
+            }
 
             // Try and find an available play
             Play play = plays.buildPlayForPlayer(currentPlayer, cards);
@@ -77,10 +116,13 @@ public class PlayCardsActionHandler implements ActionHandler
 
         }
 
+        /**
+         * @see Action#runAction(Player).
+         */
         @Override
         public void runAction(Player player) {
 
-            playCards(player, getParameter("cards", Card[].class));
+            playCards(player, getCards());
             
         }
     }

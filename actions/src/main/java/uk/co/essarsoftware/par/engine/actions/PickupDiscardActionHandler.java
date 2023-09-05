@@ -9,6 +9,11 @@ import uk.co.essarsoftware.par.cards.Card;
 import uk.co.essarsoftware.par.cards.DiscardPile;
 import uk.co.essarsoftware.par.engine.players.Player;
 
+/**
+ * Action handler class for {@link PickupDiscardAction}.
+ * Picks up a card from the discard pile and adds it to the player's hand.
+ * @author @essar
+ */
 @Component
 public class PickupDiscardActionHandler implements ActionHandler
 {
@@ -17,19 +22,34 @@ public class PickupDiscardActionHandler implements ActionHandler
 
     private final DiscardPile discardPile;
 
+    /**
+     * Instantiate a new PickupDiscardActionHandler.
+     * @param discardPile The game discard pile.
+     */
     @Autowired
-    public PickupDiscardActionHandler(DiscardPile discardPile) {
+    public PickupDiscardActionHandler(final DiscardPile discardPile) {
 
         this.discardPile = discardPile;
         
     }
 
+    /**
+     * Create a new {@link PickupDiscardAction}.
+     * @param requestID parent request ID.
+     * @param actionSequence current action sequence number.
+     * @param playerID ownering player ID.
+     * @return a new PickupDiscardAction object.
+     */
     public PickupDiscardAction newAction(String requestID, Integer actionSequence, String playerID) {
 
         return new PickupDiscardAction(requestID, actionSequence, playerID);
 
     }
 
+    /**
+     * {@link Action} subclass that picks up a card from the discard pile and adds it to a player's hand.
+     * @author @essar
+     */
     public class PickupDiscardAction extends Action<Card>
     {
         private PickupDiscardAction(String requestID, Integer actionSequence, String playerID) {
@@ -38,6 +58,9 @@ public class PickupDiscardActionHandler implements ActionHandler
 
         }
 
+        /**
+         * @see Action#getResult()
+         */
         @Override
         public Card getResult() {
             
@@ -45,7 +68,18 @@ public class PickupDiscardActionHandler implements ActionHandler
             
         }
 
-        public Card pickupDiscard(Player currentPlayer) {
+        /**
+         * Pickup from the discard pile.
+         * @param currentPlayer the player to perform the pickup.
+         * @return the card picked up.
+         */
+        public Card pickupDiscard(final Player currentPlayer) {
+
+            if (currentPlayer == null) {
+
+                throw new IllegalArgumentException("Current player cannot be null");
+            
+            }
 
             // Take card from draw pile
             final Card card = discardPile.pickup();
@@ -62,8 +96,11 @@ public class PickupDiscardActionHandler implements ActionHandler
 
         }
 
+        /**
+         * @see Action#runAction(Player).
+         */
         @Override
-        public void runAction(Player player) {
+        public void runAction(final Player player) {
 
             pickupDiscard(player);
 

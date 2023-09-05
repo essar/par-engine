@@ -1,7 +1,9 @@
 package uk.co.essarsoftware.par.engine.actions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,9 +14,14 @@ import uk.co.essarsoftware.par.cards.DiscardPile;
 import uk.co.essarsoftware.par.cards.Hand;
 import uk.co.essarsoftware.par.cards.Suit;
 import uk.co.essarsoftware.par.cards.Value;
+import uk.co.essarsoftware.par.engine.actions.PickupDiscardActionHandler.PickupDiscardAction;
 import uk.co.essarsoftware.par.engine.players.Player;
 import uk.co.essarsoftware.par.engine.players.PlayerState;
 
+/**
+ * Test cases for {@link PickupDiscardAction} and {@link PickupDiscardActionHandler}.
+ * @author @essar
+ */
 public class PickupDiscardActionTests
 {
 
@@ -51,7 +58,7 @@ public class PickupDiscardActionTests
     }
 
     @Test
-    public void testPickupDiscardActionReturnsCard() {
+    public void testPickupDiscardReturnsExpectedCard() {
 
         Card pickupCard = new PickupDiscardActionHandler(discardPile).newAction("test-request", 0, "pickup-player").pickupDiscard(pickupPlayer);
         assertEquals(TEST_CARD, pickupCard, "Expected pickupCard to equal card");
@@ -59,10 +66,44 @@ public class PickupDiscardActionTests
     }
 
     @Test
-    public void testPickupDiscardActionAddsCardToPlayerHand() {
+    public void testPickupDiscardAddsExpectedCardToPlayerHand() {
 
         new PickupDiscardActionHandler(discardPile).newAction("test-request", 0, "pickup-player").pickupDiscard(pickupPlayer);
         assertTrue(pickupPlayer.getHand().getCardsStream().anyMatch(TEST_CARD::equals), "Expected to find pickup card in player hand");
+
+    }
+
+    @Test
+    public void testPickupDiscardCallsDiscardPilePickup() {
+
+        new PickupDiscardActionHandler(discardPile).newAction("test-request", 0, "pickup-player").pickupDiscard(pickupPlayer);
+        verify(discardPile).pickup();
+
+    }
+
+    @Test
+    public void testPickupDiscardSetsResultToExpectedCard() {
+
+        PickupDiscardAction action = new PickupDiscardActionHandler(discardPile).newAction("test-request", 0, "pickup-player");
+        action.pickupDiscard(pickupPlayer);
+        assertEquals(TEST_CARD, action.getResult(), "Expected result to be picked up card");
+
+    }
+
+    @Test
+    public void testPickupDiscardThrowsExceptionForNullPlayer() {
+
+        PickupDiscardAction action = new PickupDiscardActionHandler(discardPile).newAction("test-request", 0, "pickup-player");
+        assertThrows(IllegalArgumentException.class, () -> action.pickupDiscard(null), "Expected IllegalArgumentException");
+
+    }
+
+    @Test
+    public void testRunActionSetsResultToExpectedCard() {
+
+        PickupDiscardAction action = new PickupDiscardActionHandler(discardPile).newAction("test-request", 0, "pickup-player");
+        action.runAction(pickupPlayer);
+        assertEquals(TEST_CARD, action.getResult(), "Expected result to be picked up card");
 
     }
 }

@@ -1,7 +1,9 @@
 package uk.co.essarsoftware.par.engine.actions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,9 +14,14 @@ import uk.co.essarsoftware.par.cards.DrawPile;
 import uk.co.essarsoftware.par.cards.Hand;
 import uk.co.essarsoftware.par.cards.Suit;
 import uk.co.essarsoftware.par.cards.Value;
+import uk.co.essarsoftware.par.engine.actions.PickupDrawActionHandler.PickupDrawAction;
 import uk.co.essarsoftware.par.engine.players.Player;
 import uk.co.essarsoftware.par.engine.players.PlayerState;
 
+/**
+ * Test cases for {@link PickupDrawAction} and {@link PickupDrawActionHandler}.
+ * @author @essar
+ */
 public class PickupDrawActionTests
 {
 
@@ -56,6 +63,40 @@ public class PickupDrawActionTests
 
         new PickupDrawActionHandler(drawPile).newAction("test-request", 0, "pickup-player").pickupDraw(player);
         assertTrue(player.getHand().getCardsStream().anyMatch(TEST_CARD::equals), "Expected to find pickup card in player hand");
+
+    }
+
+    @Test
+    public void testPickupDrawCallsDrawPilePickup() {
+
+        new PickupDrawActionHandler(drawPile).newAction("test-request", 0, "pickup-player").pickupDraw(player);
+        verify(drawPile).pickup();
+
+    }
+
+    @Test
+    public void testPickupDrawSetsResultToExpectedCard() {
+
+        PickupDrawAction action = new PickupDrawActionHandler(drawPile).newAction("test-request", 0, "pickup-player");
+        action.pickupDraw(player);
+        assertEquals(TEST_CARD, action.getResult(), "Expected result to be picked up card");
+
+    }
+
+    @Test
+    public void testPickupDrawThrowsExceptionForNullPlayer() {
+
+        PickupDrawAction action = new PickupDrawActionHandler(drawPile).newAction("test-request", 0, "pickup-player");
+        assertThrows(IllegalArgumentException.class, () -> action.pickupDraw(null), "Expected IllegalArgumentException");
+
+    }
+
+    @Test
+    public void testRunActionSetsResultToExpectedCard() {
+
+        PickupDrawAction action = new PickupDrawActionHandler(drawPile).newAction("test-request", 0, "pickup-player");
+        action.runAction(player);
+        assertEquals(TEST_CARD, action.getResult(), "Expected result to be picked up card");
 
     }
 }
