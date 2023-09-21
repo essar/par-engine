@@ -6,7 +6,6 @@ import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -29,7 +28,6 @@ public class EngineEventQueue
      * @param eventDispatcherService service that wraps around an {@code ExecutorService} for dispatching events.
      * @param queueProcessor service that processes events sent to the event queue.
      */
-    @Autowired
     public EngineEventQueue(final EventDispatcherExecutorService eventDispatcherService, final EventProcessor queueProcessor) {
 
         inboundQueue = new LinkedBlockingQueue<>(100);

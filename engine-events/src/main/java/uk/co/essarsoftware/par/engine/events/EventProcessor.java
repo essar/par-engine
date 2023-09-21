@@ -8,7 +8,6 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -33,7 +32,6 @@ public class EventProcessor
      * Instantiate a new EventProcessor that references the specified {@code EventProcessorExecutorServiceWrapper}.
      * @param executorService service exposing {@link ExecutorService} methods for this object.
      */
-    @Autowired
     public EventProcessor(final EventProcessorExecutorService executorService) {
 
         this.executorService = executorService;
