@@ -2,7 +2,6 @@ package uk.co.essarsoftware.par.engine.core.app.actions;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +18,6 @@ public class ActionsController
     private final ActionFactory actionFactory;
     private final ActionsService actions;
 
-    @Autowired
     public ActionsController(final ActionsService actions, final ActionFactory actionFactory) {
 
         this.actions = actions;

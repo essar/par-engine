@@ -2,7 +2,6 @@ package uk.co.essarsoftware.par.engine.core.app;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import uk.co.essarsoftware.par.engine.players.PlayersService;
@@ -26,7 +25,6 @@ public class GameServiceImpl
     private final PlaysService plays;
     private final PlayersService players;
 
-    @Autowired
     public GameServiceImpl(Game game, EngineEventQueue eventQueue, PlayersService players, PlaysService plays, CardsService cards) {
 
         this.game = game;

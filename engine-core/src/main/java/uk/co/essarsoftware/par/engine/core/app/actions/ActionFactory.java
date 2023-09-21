@@ -3,7 +3,6 @@ package uk.co.essarsoftware.par.engine.core.app.actions;
 import java.util.ArrayList;
 import java.util.function.Function;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.essarsoftware.par.engine.actions.Action;
@@ -26,7 +25,6 @@ public class ActionFactory
     private final PickupDrawActionHandler pickupDrawActionHandler;
     private final PlayCardsActionHandler playCardsActionHandler;
 
-    @Autowired
     public ActionFactory(final DiscardActionHandler discardActionHandler, final PickupDiscardActionHandler pickupDiscardActionHandler, final PickupDrawActionHandler pickupDrawActionHandler, final PlayCardsActionHandler playCardsActionHandler) {
 
         this.discardActionHandler = discardActionHandler;
