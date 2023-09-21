@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.essarsoftware.par.cards.Card;
@@ -29,7 +28,6 @@ public class PlayCardsActionHandler implements ActionHandler
      * Instantiate a new PlayCardsActionHandler.
      * @param plays Service exposing play methods on the game.
      */
-    @Autowired
     public PlayCardsActionHandler(final PlaysService plays) {
 
         this.plays = plays;

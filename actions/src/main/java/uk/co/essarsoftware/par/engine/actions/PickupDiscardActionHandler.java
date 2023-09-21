@@ -2,7 +2,6 @@ package uk.co.essarsoftware.par.engine.actions;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.essarsoftware.par.cards.Card;
@@ -26,7 +25,6 @@ public class PickupDiscardActionHandler implements ActionHandler
      * Instantiate a new PickupDiscardActionHandler.
      * @param discardPile The game discard pile.
      */
-    @Autowired
     public PickupDiscardActionHandler(final DiscardPile discardPile) {
 
         this.discardPile = discardPile;
