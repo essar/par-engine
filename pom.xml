@@ -13,9 +13,7 @@
     <module>engine-parent</module>
     <module>actions</module>
     <module>cards</module>
-    <module>game</module>
-    <module>players</module>
-    <module>table</module>
+    <module>engine-api</module>
     <module>engine-core</module>
     <module>engine-events</module>
     <!--<module>engine-auth</module>-->
