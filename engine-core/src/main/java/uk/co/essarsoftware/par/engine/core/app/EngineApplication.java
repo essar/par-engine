@@ -10,7 +10,6 @@ import org.springframework.context.annotation.ComponentScan;
 import uk.co.essarsoftware.par.cards.DiscardPile;
 import uk.co.essarsoftware.par.cards.DrawPile;
 import uk.co.essarsoftware.par.engine.core.tasks.TaskFactory;
-import uk.co.essarsoftware.par.engine.events.EngineEventQueue;
 import uk.co.essarsoftware.par.engine.game.Game;
 import uk.co.essarsoftware.par.engine.plays.PlaySet;
 
@@ -18,18 +17,12 @@ import uk.co.essarsoftware.par.engine.plays.PlaySet;
 @ComponentScan(basePackages = {
     "uk.co.essarsoftware.par.engine.actions",
     "uk.co.essarsoftware.par.engine.core.app",
+    "uk.co.essarsoftware.par.engine.events",
     "uk.co.essarsoftware.par.engine.players"
 })
 //@EnableAsync
 public class EngineApplication
 {
-
-    @Bean
-    public EngineEventQueue initEngineEventQueue() {
-
-        return new EngineEventQueue();
-        
-    }
 
     @Bean
     public DiscardPile initDiscardPile() {

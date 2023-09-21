@@ -27,6 +27,7 @@ import uk.co.essarsoftware.par.engine.core.events.PlayerPlayCardsEvent;
 import uk.co.essarsoftware.par.engine.core.events.PlayerStateChangeEvent;
 import uk.co.essarsoftware.par.engine.core.events.RoundStartedEvent;
 import uk.co.essarsoftware.par.engine.events.EngineEventQueue;
+import uk.co.essarsoftware.par.engine.events.EventProcessor;
 import uk.co.essarsoftware.par.engine.players.Player;
 import uk.co.essarsoftware.par.engine.players.PlayerState;
 import uk.co.essarsoftware.par.engine.players.PlayersService;
@@ -39,13 +40,15 @@ public class ActionsService
     private static final Logger _LOGGER = LoggerFactory.getLogger(ActionsService.class);
 
     private final ActionSequencer actionSequencer;
+    private final EventProcessor eventProcessor;
     private final EngineEventQueue eventQueue;
     private final PlaysService plays;
     private final PlayersService players;
 
-    public ActionsService(final EngineEventQueue eventQueue, final PlayersService players, final PlaysService playsSvc, final ActionSequencer actionSequencer, final DrawPile drawPile, final DiscardPile discardPile) {
+    public ActionsService(final EngineEventQueue eventQueue, final EventProcessor eventProcessor, final PlayersService players, final PlaysService playsSvc, final ActionSequencer actionSequencer, final DrawPile drawPile, final DiscardPile discardPile) {
 
         this.actionSequencer = actionSequencer;
+        this.eventProcessor = eventProcessor;
         this.eventQueue = eventQueue;
         this.players = players;
         this.plays = playsSvc;
@@ -94,14 +97,14 @@ public class ActionsService
     public void registerProcessors() {
 
         // Activate player processor
-        eventQueue.registerProcessor(NextPlayerEvent.class, event -> { activate(event.getPlayer()); });
+        eventProcessor.registerProcessor(NextPlayerEvent.class, event -> { activate(event.getPlayer()); });
 
         // Game started processor
-        eventQueue.registerProcessor(RoundStartedEvent.class, event -> { activate(event.getCurrentPlayer()); });
+        eventProcessor.registerProcessor(RoundStartedEvent.class, event -> { activate(event.getCurrentPlayer()); });
 
         // Player end turn processor
         // TODO Move to PlayerService?
-        eventQueue.registerProcessor(PlayerStateChangeEvent.class, event -> event.getNewState() == PlayerState.DISCARDED, event -> { endTurn(event.getPlayer()); });
+        eventProcessor.registerProcessor(PlayerStateChangeEvent.class, event -> event.getNewState() == PlayerState.DISCARDED, event -> { endTurn(event.getPlayer()); });
         
     }
 

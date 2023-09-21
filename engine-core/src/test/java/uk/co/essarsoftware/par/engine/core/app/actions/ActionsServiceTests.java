@@ -21,6 +21,7 @@ import uk.co.essarsoftware.par.engine.core.app.TestCard;
 import uk.co.essarsoftware.par.engine.core.app.players.PlayersServiceImpl;
 import uk.co.essarsoftware.par.engine.core.app.plays.PlaysServiceImpl;
 import uk.co.essarsoftware.par.engine.events.EngineEventQueue;
+import uk.co.essarsoftware.par.engine.events.EventProcessor;
 import uk.co.essarsoftware.par.engine.players.Player;
 
 @ExtendWith(SpringExtension.class)
@@ -29,6 +30,8 @@ public class ActionsServiceTests
 
     @MockBean
     private EngineEventQueue eventQueue;
+    @MockBean
+    private EventProcessor eventProcessor;
     @MockBean
     private PlayersServiceImpl players;
     @MockBean
@@ -57,7 +60,7 @@ public class ActionsServiceTests
     @BeforeEach
     public void setUpService() {
 
-        svc = new ActionsService(eventQueue, players, plays, actionSequencer, drawPile, discardPile);
+        svc = new ActionsService(eventQueue, eventProcessor, players, plays, actionSequencer, drawPile, discardPile);
 
     }
 

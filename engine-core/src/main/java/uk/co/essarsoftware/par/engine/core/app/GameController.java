@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 import uk.co.essarsoftware.par.cards.Card;
 import uk.co.essarsoftware.par.engine.core.app.players.PlayersJsonController;
 import uk.co.essarsoftware.par.engine.events.EngineEvent;
-import uk.co.essarsoftware.par.engine.events.EngineEventQueue;
+import uk.co.essarsoftware.par.engine.events.EventProcessor;
 import uk.co.essarsoftware.par.engine.game.Game;
 import uk.co.essarsoftware.par.engine.players.PlayerList;
 
@@ -27,7 +27,7 @@ public class GameController
     private CardsService cards;
 
     @Autowired
-    private EngineEventQueue eventQueue;
+    private EventProcessor eventProcessor;
 
     @Autowired Game game;
 
@@ -57,7 +57,7 @@ public class GameController
     @GetMapping(path = "/game/events", produces = {"text/event-stream", "application/stream+json", "application/x-ndjson"})
     public Flux<String> streamEvents() throws InterruptedException {
 
-        return Flux.fromStream(eventQueue.getEventStream()).log().map(EngineEvent::toString);
+        return Flux.fromStream(eventProcessor.getEventStream()).log().map(EngineEvent::toString);
             //.merge(Flux.interval(Duration.ofSeconds(10)).log().map(l -> Long.toString(l)));
 
     }
