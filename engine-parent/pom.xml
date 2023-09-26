@@ -117,6 +117,15 @@
           <groupId>org.pitest</groupId>
           <artifactId>pitest-maven</artifactId>
           <version>${pitest.plugin.version}</version>
+          <configuration>
+            <!-- options required for report aggregation -->
+            <exportLineCoverage>true</exportLineCoverage>
+            <outputFormats>
+              <value>HTML</value>
+              <value>XML</value>
+            </outputFormats>
+            <timestampedReports>false</timestampedReports>
+          </configuration>
           <dependencies>
             <dependency>
               <groupId>org.pitest</groupId>
@@ -126,7 +135,7 @@
           </dependencies>
           <executions>
             <execution>
-              <id>default-mutationCoverage</id>
+              <id>pitest-mutation-coverage</id>
               <goals>
                 <goal>mutationCoverage</goal>
               </goals>
@@ -140,7 +149,7 @@
                   <param>uk.co.essarsoftware.par.cards.*</param>
                   <param>uk.co.essarsoftware.par.engine.*</param>
                 </targetTests>
-                <reportsDirectory>target/site/pitest</reportsDirectory>
+                <!-- <reportsDirectory>target/site/pitest</reportsDirectory> -->
               </configuration>
             </execution>
           </executions>
