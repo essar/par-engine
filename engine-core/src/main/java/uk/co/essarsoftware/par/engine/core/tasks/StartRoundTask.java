@@ -11,6 +11,10 @@ import uk.co.essarsoftware.par.engine.players.Player;
 import uk.co.essarsoftware.par.engine.players.PlayerState;
 import uk.co.essarsoftware.par.engine.players.PlayersService;
 
+/**
+ * Task executed upon starting a new round. May execute asynchronously.
+ * @author @essar
+ */
 @Component
 public class StartRoundTask
 {
@@ -20,6 +24,11 @@ public class StartRoundTask
     private CardsService cards;
     private PlayersService players;
 
+    /**
+     * Instantiate this task with service beans.
+     * @param cards service exposing card functions.
+     * @param players service exposing player fuinctions.
+     */
     public StartRoundTask(CardsService cards, PlayersService players) {
 
         this.cards = cards;
@@ -27,6 +36,10 @@ public class StartRoundTask
 
     }
 
+    /**
+     * Process a received {@link RoundStartedEvent}.
+     * @param event the event to process.
+     */
     @Async
     public void processEvent(RoundStartedEvent event) {
 
