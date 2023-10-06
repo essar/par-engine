@@ -11,6 +11,7 @@ import uk.co.essarsoftware.par.cards.DiscardPile;
 import uk.co.essarsoftware.par.cards.DrawPile;
 import uk.co.essarsoftware.par.cards.Hand;
 import uk.co.essarsoftware.par.cards.Pack;
+import uk.co.essarsoftware.par.engine.core.exceptions.CardNotInHandException;
 import uk.co.essarsoftware.par.engine.players.Player;
 import uk.co.essarsoftware.par.engine.players.PlayersService;
 

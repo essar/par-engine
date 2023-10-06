@@ -1,4 +1,4 @@
-package uk.co.essarsoftware.par.engine.core.app.players;
+package uk.co.essarsoftware.par.engine.core.requests;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 

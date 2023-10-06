@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import uk.co.essarsoftware.par.engine.actions.Action;
+import uk.co.essarsoftware.par.engine.core.exceptions.ActionOutOfSequenceException;
 
 @Component
 class ActionSequencer

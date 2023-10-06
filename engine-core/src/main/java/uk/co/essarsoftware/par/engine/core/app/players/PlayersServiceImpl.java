@@ -6,11 +6,11 @@ import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 
-import uk.co.essarsoftware.par.engine.core.app.GameStateException;
-import uk.co.essarsoftware.par.engine.core.app.InvalidPlayerStateException;
-import uk.co.essarsoftware.par.engine.core.app.NotCurrentPlayerException;
-import uk.co.essarsoftware.par.engine.core.app.UnknownPlayerException;
 import uk.co.essarsoftware.par.engine.core.events.PlayerStateChangeEvent;
+import uk.co.essarsoftware.par.engine.core.exceptions.GameStateException;
+import uk.co.essarsoftware.par.engine.core.exceptions.InvalidPlayerStateException;
+import uk.co.essarsoftware.par.engine.core.exceptions.NotCurrentPlayerException;
+import uk.co.essarsoftware.par.engine.core.exceptions.UnknownPlayerException;
 import uk.co.essarsoftware.par.engine.events.EngineEventQueue;
 import uk.co.essarsoftware.par.engine.game.Game;
 import uk.co.essarsoftware.par.engine.game.Round;

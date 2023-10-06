@@ -13,7 +13,7 @@ import uk.co.essarsoftware.par.cards.CardFormatter;
 import uk.co.essarsoftware.par.cards.Play;
 import uk.co.essarsoftware.par.cards.PrialPlay;
 import uk.co.essarsoftware.par.cards.RunPlay;
-import uk.co.essarsoftware.par.engine.core.app.InvalidPlayException;
+import uk.co.essarsoftware.par.engine.core.exceptions.InvalidPlayException;
 import uk.co.essarsoftware.par.engine.game.Round;
 import uk.co.essarsoftware.par.engine.players.Player;
 import uk.co.essarsoftware.par.engine.players.PlayerList;

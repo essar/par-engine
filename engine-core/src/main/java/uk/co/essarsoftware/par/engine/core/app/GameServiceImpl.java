@@ -1,5 +1,7 @@
 package uk.co.essarsoftware.par.engine.core.app;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -8,13 +10,18 @@ import uk.co.essarsoftware.par.engine.players.PlayersService;
 import uk.co.essarsoftware.par.engine.plays.PlaysService;
 import uk.co.essarsoftware.par.engine.events.EngineEventQueue;
 import uk.co.essarsoftware.par.engine.core.events.RoundStartedEvent;
+import uk.co.essarsoftware.par.engine.core.exceptions.GameStateException;
 import uk.co.essarsoftware.par.engine.players.PlayerState;
 import uk.co.essarsoftware.par.engine.game.Game;
-
+import uk.co.essarsoftware.par.engine.game.GameService;
 import uk.co.essarsoftware.par.engine.game.Round;
 
+/**
+ * Implementation of {@link GameService}, providing standard game process.
+ * @author @essar
+ */
 @Service
-public class GameServiceImpl
+public class GameServiceImpl implements GameService
 {
 
     private static final Logger _LOG = LoggerFactory.getLogger(GameServiceImpl.class);
@@ -24,6 +31,17 @@ public class GameServiceImpl
     private final Game game;
     private final PlaysService plays;
     private final PlayersService players;
+
+    private static final Map<Round, Round> NEXT_ROUND = Map.of(
+            Round.START, Round.PP,
+            Round.PP, Round.PR,
+            Round.PR, Round.RR,
+            Round.RR, Round.PPR,
+            Round.PPR, Round.PRR,
+            Round.PRR, Round.PPP,
+            Round.PPP, Round.RRR,
+            Round.RRR, Round.END,
+            Round.END, Round.END);
 
     public GameServiceImpl(Game game, EngineEventQueue eventQueue, PlayersService players, PlaysService plays, CardsService cards) {
 
@@ -37,7 +55,9 @@ public class GameServiceImpl
 
     private static Round getNextRound(Round currentRound) {
 
-        switch (currentRound) {
+        return NEXT_ROUND.get(currentRound);
+
+        /* switch (currentRound) {
             case START: return Round.PP;
             case PP: return Round.PR;
             case PR: return Round.RR;
@@ -48,16 +68,21 @@ public class GameServiceImpl
             case RRR: return Round.END;
             case END: return Round.END;
             default: throw new IllegalArgumentException(String.format("Unexpected round: %s", currentRound));
-        }
+        } */
     }
 
+    @Override
     public Game getGame() {
 
         return game;
 
     }
 
-    public synchronized StartRoundResponse startNextRound() {
+    /**
+     * @see {@link GameService#startNextRound()}.
+     */
+    @Override
+    public synchronized Round startNextRound() {
 
         if (game.getCurrentRound() == Round.END) {
 
@@ -69,9 +94,14 @@ public class GameServiceImpl
         if (nextRound == Round.END) {
 
             // Handle end of game activities
+            _LOG.info("Game ended");
+
+            // Stop here
+            return nextRound;
+            
         }
 
-        _LOG.info("Starting round {}", nextRound);
+        _LOG.debug("Starting round {}", nextRound);
 
         // Check player states and move dealer token
         players.startNewRound();
@@ -83,7 +113,7 @@ public class GameServiceImpl
         cards.initPiles();
 
         // Initialize plays
-        plays.initPlaysForRound(game.getCurrentRound());
+        plays.initPlaysForRound(nextRound);
 
         // Deal player hands
         cards.dealHands();
@@ -91,20 +121,13 @@ public class GameServiceImpl
         // Set all players to WATCHING
         players.getPlayersStream().forEach(p -> players.setPlayerState(p, PlayerState.WATCHING));
 
-        // Set current player to PICKUP
-        //Player currentPlayer = players.getCurrentPlayer();
-        //players.setPlayerState(currentPlayer, PlayerState.PICKUP);
-        
         // Reset turn counter
         game.resetTurnCount();
 
         // Queue event
         eventQueue.queueEvent(new RoundStartedEvent(nextRound, players.getCurrentPlayer()));
 
-        // Create response
-        StartRoundResponse response = new StartRoundResponse(nextRound, players.getCurrentPlayer().getPlayerID());
-            
-        return response;
+        return nextRound;
 
     }
 }

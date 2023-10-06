@@ -18,7 +18,7 @@ import uk.co.essarsoftware.par.cards.PrialPlay;
 import uk.co.essarsoftware.par.cards.RunPlay;
 import uk.co.essarsoftware.par.cards.Suit;
 import uk.co.essarsoftware.par.cards.Value;
-import uk.co.essarsoftware.par.engine.core.app.InvalidPlayException;
+import uk.co.essarsoftware.par.engine.core.exceptions.InvalidPlayException;
 import uk.co.essarsoftware.par.engine.players.Player;
 import uk.co.essarsoftware.par.engine.players.PlayerList;
 import uk.co.essarsoftware.par.engine.plays.PlaySet;

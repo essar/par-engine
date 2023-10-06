@@ -1,4 +1,4 @@
-package uk.co.essarsoftware.par.engine.core.app.players;
+package uk.co.essarsoftware.par.engine.core.responses;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 
@@ -8,7 +8,7 @@ public class GetPlayerResponse
 {
     private Player player;
 
-    GetPlayerResponse(Player player) {
+    public GetPlayerResponse(Player player) {
 
         this.player = player;
 

@@ -1,4 +1,4 @@
-package uk.co.essarsoftware.par.engine.core.app.actions;
+package uk.co.essarsoftware.par.engine.core.requests;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonGetter;
+
+import uk.co.essarsoftware.par.engine.core.app.actions.ActionType;
 
 public class ActionRequest
 {
@@ -15,12 +17,6 @@ public class ActionRequest
     private ActionType actionType;
     private Integer actionSequence;
     private String gameID, playerID;
-
-    <E> E getRequestParameter(String key, Class<E> clz) {
-
-        return clz.cast(params.get(key));
-
-    }
 
     @JsonAnySetter
     public void addRequestParameter(String key, Object value) {
@@ -68,6 +64,12 @@ public class ActionRequest
     public String getRequestID() {
 
         return requestID;
+
+    }
+
+    public <E> E getRequestParameter(String key, Class<E> clz) {
+
+        return clz.cast(params.get(key));
 
     }
 

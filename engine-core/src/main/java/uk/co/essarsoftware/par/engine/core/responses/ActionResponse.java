@@ -1,4 +1,4 @@
-package uk.co.essarsoftware.par.engine.core.app.actions;
+package uk.co.essarsoftware.par.engine.core.responses;
 
 import java.util.Collections;
 import java.util.Map;
@@ -6,6 +6,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonGetter;
 
 import uk.co.essarsoftware.par.engine.actions.Action;
+import uk.co.essarsoftware.par.engine.core.app.actions.ActionType;
 
 public class ActionResponse
 {
@@ -23,12 +24,6 @@ public class ActionResponse
         actionSequence = action.getActionSequence();
         //actionType = action.getActionType();
      
-    }
-
-    void setNextActionSequence(int nextActionSequence) {
-
-        this.nextActionSequence = nextActionSequence;
-    
     }
 
     @JsonGetter("action_params")
@@ -58,4 +53,11 @@ public class ActionResponse
         return nextActionSequence;
 
     }
+
+    public void setNextActionSequence(int nextActionSequence) {
+
+        this.nextActionSequence = nextActionSequence;
+    
+    }
+    
 }

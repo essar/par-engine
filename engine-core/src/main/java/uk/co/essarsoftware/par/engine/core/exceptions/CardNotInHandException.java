@@ -1,20 +1,21 @@
-package uk.co.essarsoftware.par.engine.core.app;
+package uk.co.essarsoftware.par.engine.core.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(code = HttpStatus.FORBIDDEN)
-public class GameStateException extends RuntimeException
+public class CardNotInHandException extends EngineException
 {
-    public GameStateException() {
+    public CardNotInHandException() {
 
         super();
 
     }
 
-    public GameStateException(String message) {
+    public CardNotInHandException(String message) {
 
         super(message);
 
     }
+    
 }

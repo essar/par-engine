@@ -1,4 +1,4 @@
-package uk.co.essarsoftware.par.engine.core.app;
+package uk.co.essarsoftware.par.engine.core.exceptions;
 
 public class EngineException extends RuntimeException
 {
