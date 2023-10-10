@@ -1,6 +1,7 @@
 package uk.co.essarsoftware.par.engine.events;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -9,6 +10,8 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import uk.co.essarsoftware.par.engine.EventProcessorBinding;
 
 /**
  * Class responsible for processing events received in the {@link EngineEventQueue}.
@@ -144,10 +147,13 @@ public class EventProcessor
      * @param <E> subclass of {@link EngineEvent}.
      * @param eventClz the class of event to process with this function.
      * @param processorFunction the function to execute.
+     * @return the {@code EventProcessorBinding} created to bind this processor.
      */
-    public <E extends EngineEvent> void registerProcessor(Class<E> eventClz, Consumer<E> processorFunction) {
+    public <E extends EngineEvent> EventProcessorBinding<E> registerProcessor(Class<E> eventClz, Consumer<E> processorFunction) {
 
-        eventProcessorBindings.add(new EventProcessorBinding<E>(eventClz, processorFunction));
+        EventProcessorBinding<E> binding = new SimpleEventProcessorBinding<E>(eventClz, processorFunction);
+        eventProcessorBindings.add(binding);
+        return binding;
 
     }
 
@@ -157,10 +163,13 @@ public class EventProcessor
      * @param eventClz the class of event to process with this function.
      * @param condition the predicate condition to determine if this function should be executed.
      * @param processorFunction the function to execute.
+     * @return the {@code EventProcessorBinding} created to bind this processor.
      */
-    public <E extends EngineEvent> void registerProcessor(Class<E> eventClz, Predicate<E> condition, Consumer<E> processorFunction) {
+    public <E extends EngineEvent> EventProcessorBinding<E> registerProcessor(Class<E> eventClz, Predicate<E> condition, Consumer<E> processorFunction) {
 
-        eventProcessorBindings.add(new EventProcessorConditionalBinding<E>(eventClz, condition, processorFunction));
+        EventProcessorBinding<E> binding = new ConditionalEventProcessorBinding<E>(eventClz, condition, processorFunction);
+        eventProcessorBindings.add(binding);
+        return binding;
 
     }
 
@@ -174,11 +183,21 @@ public class EventProcessor
     }
 
     /**
-     * Represents a binding of a processor function and a specified class.
+     * Unregister an existing processor function from the processor.
+     * @param binding the processor binding to remove.
+     */
+    public void unregisterProcessor(EventProcessorBinding<? extends EngineEvent> binding) {
+
+        eventProcessorBindings.remove(binding);
+
+    }
+
+    /**
+     * Simple implementation of {@link EventProcessorBinding}, that fires without additional execution criteria.
      * @author @essar
      * @param <E> subclass of {@link EngineEvent}.
      */
-    private static class EventProcessorBinding<E extends EngineEvent>
+    private static class SimpleEventProcessorBinding<E extends EngineEvent> implements EventProcessorBinding<E>
     {
         private final Class<E> eventClz;
         private final Consumer<E> consumer;
@@ -188,7 +207,7 @@ public class EventProcessor
          * @param eventClz the class of event to process with this function.
          * @param consumer the function to execute.
          */
-        public EventProcessorBinding(Class<E> eventClz, Consumer<E> consumer) {
+        public SimpleEventProcessorBinding(Class<E> eventClz, Consumer<E> consumer) {
 
             this.eventClz = eventClz;
             this.consumer = consumer;
@@ -197,29 +216,31 @@ public class EventProcessor
 
         /**
          * Execute the bound function against a provided event.
-         * @param event the event to execute against this function.
+         * @see EventProcessorBinding#execute(EngineEvent).
          */
-        void execute(EngineEvent event) {
+        @Override
+        public void execute(EngineEvent event) {
 
             getConsumer().accept(getEventClass().cast(event));
 
         }
 
         /**
-         * Specify if this function should execute. Always returns {@code true}.
-         * @param event the event to execute against this function.
-         * @return boolean indicating if the process functiom should be executed.
+         * Get the bound processor function.
+         * @see EventProcessorBinding#getConsumer()
          */
-        boolean shouldFire(EngineEvent event) {
+        @Override
+        public Consumer<E> getConsumer() {
 
-            return true;
+            return consumer;
 
         }
 
         /**
          * Get the class of event this binding applies to.
-         * @return a subclass of {@link EngineEvent}.
+         * @see EventProcessorBinding#getEventClass()
          */
+        @Override
         public Class<E> getEventClass() {
 
             return eventClz;
@@ -227,12 +248,13 @@ public class EventProcessor
         }
 
         /**
-         * Get the bound processor function.
-         * @return a single-argument function bound to the event class.
+         * Specify if this function should execute. Always returns {@code true}.
+         * @see EventProcessorBinding#shouldFire(EngineEvent).
          */
-        public Consumer<E> getConsumer() {
+        @Override
+        public boolean shouldFire(EngineEvent event) {
 
-            return consumer;
+            return true;
 
         }
     }
@@ -242,7 +264,7 @@ public class EventProcessor
      * @author @essar
      * @param <E> subclass of {@link EngineEvent}.
      */
-    private static class EventProcessorConditionalBinding<E extends EngineEvent> extends EventProcessorBinding<E>
+    private static class ConditionalEventProcessorBinding<E extends EngineEvent> extends SimpleEventProcessorBinding<E>
     {
         private final Predicate<E> condition;
 
@@ -252,7 +274,7 @@ public class EventProcessor
          * @param condition a predicate that determines if this binding should execute for a given event.
          * @param consumer the function to execute.
          */
-        public EventProcessorConditionalBinding(Class<E> eventClz, Predicate<E> condition, Consumer<E> consumer) {
+        public ConditionalEventProcessorBinding(Class<E> eventClz, Predicate<E> condition, Consumer<E> consumer) {
 
             super(eventClz, consumer);
             this.condition = condition;
@@ -261,11 +283,10 @@ public class EventProcessor
 
         /**
          * Specify if this function should execute.
-         * @param event the event to execute against this function.
-         * @return boolean indicating if the process functiom should be executed.
+         * @see EventProcessorBinding#shouldFire(EngineEvent).
          */
         @Override
-        boolean shouldFire(EngineEvent event) {
+        public boolean shouldFire(EngineEvent event) {
 
             return getCondition().test(getEventClass().cast(event));
 

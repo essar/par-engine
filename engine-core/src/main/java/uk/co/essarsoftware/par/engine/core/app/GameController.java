@@ -67,20 +67,6 @@ public class GameController
     }
     
     /**
-     * Get a stream of game events.
-     * @return the events that have taken place and are taking place in the engine.
-     * @throws InterruptedException if the event stream is interrupted.
-     */
-    /* // @GetMapping(path = "/game/events", produces = MediaType.APPLICATION_NDJSON_VALUE)
-    @GetMapping(path = "/game/events", produces = {"text/event-stream", "application/stream+json", "application/x-ndjson"})
-    public Flux<String> streamEvents() throws InterruptedException {
-
-        return Flux.fromStream(eventProcessor.getEventStream()).log().map(EngineEvent::toString);
-            //.merge(Flux.interval(Duration.ofSeconds(10)).log().map(l -> Long.toString(l)));
-
-    } */
-
-    /**
      * Start a new round in the game.
      * @return the new round state, encapsulated using {@link StartRoundResponse}.
      */

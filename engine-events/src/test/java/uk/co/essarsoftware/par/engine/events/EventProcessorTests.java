@@ -1,5 +1,6 @@
 package uk.co.essarsoftware.par.engine.events;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -13,6 +14,8 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import uk.co.essarsoftware.par.engine.EventProcessorBinding;
 
 public class EventProcessorTests
 {
@@ -167,6 +170,28 @@ public class EventProcessorTests
     }
 
     @Test
+    public void testRegisterProcessorCreatesBindingForConsumer() {
+
+        TestConsumer mockConsumer = mock(TestConsumer.class);
+
+        EventProcessor processor = new EventProcessor(mockProcessorService);
+        EventProcessorBinding<TestEvent> binding = processor.registerProcessor(TestEvent.class, mockConsumer);
+        assertEquals(mockConsumer, binding.getConsumer(),"Expected binding to be attached to our consumer");
+        
+    }
+
+    @Test
+    public void testRegisterProcessorCreatesBindingForEventClass() {
+
+        TestConsumer mockConsumer = mock(TestConsumer.class);
+
+        EventProcessor processor = new EventProcessor(mockProcessorService);
+        EventProcessorBinding<TestEvent> binding = processor.registerProcessor(TestEvent.class, mockConsumer);
+        assertEquals(TestEvent.class, binding.getEventClass(),"Expected binding to be for our event class");
+        
+    }
+
+    @Test
     public void testRegisterProcessorAddsBindingToList() {
 
         TestConsumer mockConsumer = mock(TestConsumer.class);
@@ -200,6 +225,28 @@ public class EventProcessorTests
     }
 
     @Test
+    public void testRegisterProcessorCreatesBindingForConsumerForConditionalBinding() {
+
+        TestConsumer mockConsumer = mock(TestConsumer.class);
+
+        EventProcessor processor = new EventProcessor(mockProcessorService);
+        EventProcessorBinding<TestEvent> binding = processor.registerProcessor(TestEvent.class, e -> e.getClass() == TestEvent.class, mockConsumer);
+        assertEquals(mockConsumer, binding.getConsumer(),"Expected binding to be attached to our consumer");
+        
+    }
+
+    @Test
+    public void testRegisterProcessorCreatesBindingForEventClassForConditionalBinding() {
+
+        TestConsumer mockConsumer = mock(TestConsumer.class);
+
+        EventProcessor processor = new EventProcessor(mockProcessorService);
+        EventProcessorBinding<TestEvent> binding = processor.registerProcessor(TestEvent.class, e -> e.getClass() == TestEvent.class, mockConsumer);
+        assertEquals(TestEvent.class, binding.getEventClass(),"Expected binding to be for our event class");
+        
+    }
+
+    @Test
     public void testRegisterProcessorAddsBindingToListForConditionalBinding() {
 
         TestConsumer mockConsumer = mock(TestConsumer.class);
@@ -216,6 +263,29 @@ public class EventProcessorTests
         EventProcessor processor = new EventProcessor(mockProcessorService);
         processor.stopProcessor();
         verify(mockProcessorService).stopProcessor();
+
+    }
+
+    @Test
+    public void testUnregisterProcessorRemovesProcessor() {
+
+        TestConsumer mockConsumer = mock(TestConsumer.class);
+
+        EventProcessor processor = new EventProcessor(mockProcessorService);
+        EventProcessorBinding<TestEvent> binding = processor.registerProcessor(TestEvent.class, mockConsumer);
+        processor.unregisterProcessor(binding);
+        assertArrayEquals(new Consumer[0], processor.getProcessorsForEvent(TestEvent.class), "Expected list to be empty for TestEvent class");
+
+    }
+
+    @Test
+    public void testUnregisterProcessorDoesNothingForUnknownProcessor() {
+
+        EventProcessorBinding<TestEvent> binding = mock(TestEventProcessorBinding.class);
+
+        EventProcessor processor = new EventProcessor(mockProcessorService);
+        processor.unregisterProcessor(binding);
+        assertArrayEquals(new Consumer[0], processor.getProcessorsForEvent(TestEvent.class), "Expected list to be empty for TestEvent class");
 
     }
 
@@ -242,5 +312,10 @@ public class EventProcessorTests
     private static class SubTestEvent extends TestEvent
     {
         // Empty class
+    }
+
+    private static interface TestEventProcessorBinding extends EventProcessorBinding<TestEvent>
+    {
+        // Empty interface
     }
 }
