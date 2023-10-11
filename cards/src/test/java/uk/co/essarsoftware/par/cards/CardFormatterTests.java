@@ -123,11 +123,25 @@ public class CardFormatterTests
     }
 
     @Test
+    public void testAsShortStringReturnsNullForNullCard() {
+
+        assertNull(CardFormatter.asShortString((Card) null), "Expected null");
+    
+    }
+
+    @Test
     public void testAsShortStringReturnsExpectedStringArrayForCardArray() {
 
         Card[] cards = new Card[] { Card.as(Suit.DIAMONDS, Value.EIGHT), Card.as(Suit.HEARTS, Value.ACE) };
         String str = "8D,1H";
         assertEquals(str, CardFormatter.asShortString(cards), "Expected card string");
+    
+    }
+
+    @Test
+    public void testAsShortStringReturnsNullForNullCardArray() {
+
+        assertNull(CardFormatter.asShortString((Card[]) null), "Expected null");
     
     }
 
@@ -142,6 +156,13 @@ public class CardFormatterTests
         };
         String str = "8D,1H";
         assertEquals(str, CardFormatter.asShortString(cards), "Expected card string");
+    
+    }
+
+    @Test
+    public void testAsShortStringReturnsNullForNullCardContainer() {
+
+        assertNull(CardFormatter.asShortString((CardContainer) null), "Expected null");
     
     }
     

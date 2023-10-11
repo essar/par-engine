@@ -122,7 +122,7 @@ public class CardFormatter
      */
     public static String asShortString(Card card) {
         
-        return card.isJoker() ? "*J" : String.format("%s%s", valueStrings.get(card.getValue()), suitStrings.get(card.getSuit()));
+        return card == null ? null : card.isJoker() ? "*J" : String.format("%s%s", valueStrings.get(card.getValue()), suitStrings.get(card.getSuit()));
         
     }
 
@@ -133,7 +133,7 @@ public class CardFormatter
      */
     public static String asShortString(CardContainer cards) {
 
-        return String.join(",", cards.getCardStream().map(CardFormatter::asShortString).toList());
+        return cards == null ? null : String.join(",", cards.getCardStream().map(CardFormatter::asShortString).toList());
 
     }
 
@@ -144,7 +144,7 @@ public class CardFormatter
      */
     public static String asShortString(Card[] cards) {
 
-        return String.join(",", Arrays.stream(cards).map(CardFormatter::asShortString).toList());
+        return cards == null ? null : String.join(",", Arrays.stream(cards).map(CardFormatter::asShortString).toList());
 
     }
 }
