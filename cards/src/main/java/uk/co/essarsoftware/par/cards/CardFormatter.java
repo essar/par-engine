@@ -133,7 +133,7 @@ public class CardFormatter
      */
     public static String asShortString(CardContainer cards) {
 
-        return cards == null ? null : String.join(",", cards.getCardStream().map(CardFormatter::asShortString).toList());
+        return cards == null ? null : String.join(",", cards.getCardStream().filter(Objects::nonNull).map(CardFormatter::asShortString).toList());
 
     }
 
@@ -144,7 +144,7 @@ public class CardFormatter
      */
     public static String asShortString(Card[] cards) {
 
-        return cards == null ? null : String.join(",", Arrays.stream(cards).map(CardFormatter::asShortString).toList());
+        return cards == null ? null : String.join(",", Arrays.stream(cards).filter(Objects::nonNull).map(CardFormatter::asShortString).toList());
 
     }
 }

@@ -139,6 +139,16 @@ public class CardFormatterTests
     }
 
     @Test
+    public void testAsShortStringReturnsExpectedStringArrayForCardArrayContainingNulls() {
+
+        Card[] cards = new Card[] { Card.as(Suit.DIAMONDS, Value.EIGHT), null, Card.as(Suit.HEARTS, Value.ACE) };
+        String str = "8D,1H";
+        assertEquals(str, CardFormatter.asShortString(cards), "Expected card string without nulls");
+    
+    }
+    
+
+    @Test
     public void testAsShortStringReturnsNullForNullCardArray() {
 
         assertNull(CardFormatter.asShortString((Card[]) null), "Expected null");
@@ -152,6 +162,20 @@ public class CardFormatterTests
             @Override
             public Stream<Card> getCardStream() {
                 return Arrays.stream(new Card[] { Card.as(Suit.DIAMONDS, Value.EIGHT), Card.as(Suit.HEARTS, Value.ACE) });
+            }
+        };
+        String str = "8D,1H";
+        assertEquals(str, CardFormatter.asShortString(cards), "Expected card string");
+    
+    }
+
+    @Test
+    public void testAsShortStringReturnsExpectedStringArrayForCardContainerContainingNulls() {
+
+        CardContainer cards = new CardContainer() {
+            @Override
+            public Stream<Card> getCardStream() {
+                return Arrays.stream(new Card[] { Card.as(Suit.DIAMONDS, Value.EIGHT), null, Card.as(Suit.HEARTS, Value.ACE) });
             }
         };
         String str = "8D,1H";
