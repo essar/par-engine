@@ -14,6 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import uk.co.essarsoftware.par.cards.Card;
+import uk.co.essarsoftware.par.cards.DiscardPile;
 import uk.co.essarsoftware.par.cards.Suit;
 import uk.co.essarsoftware.par.cards.Value;
 import uk.co.essarsoftware.par.engine.core.responses.GetDiscardResponse;
@@ -31,7 +32,7 @@ public class GameControllerTests
 {
 
     @MockBean
-    private CardsService cardsSvc;
+    private DiscardPile discardPile;
     @MockBean
     private Game game;
     @MockBean
@@ -44,7 +45,7 @@ public class GameControllerTests
     @BeforeEach
     public void initGameController() {
 
-        underTest = new GameController(game, players, gameSvc, cardsSvc);
+        underTest = new GameController(game, players, gameSvc, discardPile);
         
     }
 
@@ -142,7 +143,7 @@ public class GameControllerTests
     public void testGetDiscardJsonReturnsCard() {
 
         Card card = Card.as(Suit.CLUBS, Value.ACE);
-        when(cardsSvc.getDiscard()).thenReturn(card);
+        when(discardPile.getDiscard()).thenReturn(card);
 
         GetDiscardResponse response = underTest.getDiscardJson().block();
         assertEquals(card, response.getDiscard(), "Response should contain card from Table");
@@ -152,7 +153,7 @@ public class GameControllerTests
     @Test
     public void testGetDiscardJsonThrowsExceptionWhenRaisedInService() {
 
-        when(cardsSvc.getDiscard()).thenThrow(new RuntimeException());
+        when(discardPile.getDiscard()).thenThrow(new RuntimeException());
 
         assertThrows(RuntimeException.class, () -> underTest.getDiscardJson().block(), "Exception from service should be propagated");
         
@@ -162,7 +163,7 @@ public class GameControllerTests
     public void testGetDiscardTextsReturnsCardValue() {
 
         Card card = Card.as(Suit.CLUBS, Value.ACE);
-        when(cardsSvc.getDiscard()).thenReturn(card);
+        when(discardPile.getDiscard()).thenReturn(card);
 
         String response = underTest.getDiscardText().block();
         assertEquals("1C", response, "Response should be card string");
@@ -172,7 +173,7 @@ public class GameControllerTests
     @Test
     public void testGetDiscardTextThrowsExceptionWhenRaisedInService() {
 
-        when(cardsSvc.getDiscard()).thenThrow(new RuntimeException());
+        when(discardPile.getDiscard()).thenThrow(new RuntimeException());
 
         assertThrows(RuntimeException.class, () -> underTest.getDiscardText().block(), "Exception from service should be propagated");
         

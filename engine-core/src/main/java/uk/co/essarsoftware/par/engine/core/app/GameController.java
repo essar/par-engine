@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import reactor.core.publisher.Mono;
+import uk.co.essarsoftware.par.cards.DiscardPile;
 import uk.co.essarsoftware.par.engine.core.responses.GetDiscardResponse;
 import uk.co.essarsoftware.par.engine.core.responses.GetGameResponse;
 import uk.co.essarsoftware.par.engine.core.responses.StartRoundResponse;
@@ -23,7 +24,7 @@ public class GameController
 {
     private static final Logger _LOG = LoggerFactory.getLogger(GameController.class);
 
-    private final CardsService cards;
+    private final DiscardPile discardPile;
     private final Game game;
     private final PlayerList players;
     private final GameService gameSvc;
@@ -34,14 +35,14 @@ public class GameController
      * @param game current Game object.
      * @param players list holding players within the game.
      * @param gameSvc service exposing game functions.
-     * @param cardsSvc service exposing table/card functions.
+     * @param discardPile current game discard pile.
      */
-    public GameController(Game game, PlayerList players, GameService gameSvc, CardsService cardsSvc) {
+    public GameController(Game game, PlayerList players, GameService gameSvc, DiscardPile discardPile) {
 
         this.game = game;
         this.players = players;
         this.gameSvc = gameSvc;
-        this.cards = cardsSvc;
+        this.discardPile = discardPile;
 
     }
 
@@ -86,7 +87,7 @@ public class GameController
     @GetMapping(path = "/table/discard", produces = "application/json")
     public Mono<GetDiscardResponse> getDiscardJson() {
 
-        return Mono.fromCallable(cards::getDiscard)
+        return Mono.fromCallable(discardPile::getDiscard)
             .map(GetDiscardResponse::new)
             .doOnError(GameController::defaultErrorProcessor);
     
@@ -99,7 +100,7 @@ public class GameController
     @GetMapping(path = "/table/discard", produces = "text/plain")
     public Mono<String> getDiscardText() {
 
-        return Mono.fromCallable(cards::getDiscard)
+        return Mono.fromCallable(discardPile::getDiscard)
             .map(CardEncoder::asShortString)
             .doOnError(GameController::defaultErrorProcessor);
 
