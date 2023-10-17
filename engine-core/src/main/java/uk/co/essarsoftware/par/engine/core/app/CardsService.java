@@ -3,7 +3,6 @@ package uk.co.essarsoftware.par.engine.core.app;
 import java.util.Arrays;
 import java.util.Objects;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import uk.co.essarsoftware.par.cards.Card;
@@ -18,16 +17,19 @@ import uk.co.essarsoftware.par.engine.players.PlayersService;
 @Service
 public class CardsService
 {
-    @Autowired
-    private DiscardPile discardPile;
-
-    @Autowired
-    private DrawPile drawPile;
-
-    @Autowired
-    private PlayersService players;
+    private final DiscardPile discardPile;
+    private final DrawPile drawPile;
+    private final PlayersService players;
 
     final int HAND_SIZE = 11;
+
+    public CardsService(PlayersService players, DrawPile drawPile, DiscardPile discard) {
+
+        this.players = players;
+        this.drawPile = drawPile;
+        this.discardPile = discard;
+
+    }
         
     public void dealHands() {
 
@@ -61,23 +63,26 @@ public class CardsService
 
     }
 
+    /* @Deprecated
     public Card getDiscard() {
 
         return discardPile.getDiscard();
         
-    }
+    } */
 
+    /* @Deprecated
     public Card pickupDiscard() {
 
         return discardPile.pickup();
 
-    }
+    } */
 
+    /* @Deprecated
     public Card pickupDraw() {
 
         return drawPile.pickup();
 
-    }
+    } */
 
     public Card[] resolveCards(Player player, Card... cards) {
 
